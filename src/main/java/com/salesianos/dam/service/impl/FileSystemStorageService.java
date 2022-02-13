@@ -29,15 +29,10 @@ public class FileSystemStorageService implements StorageService {
 
     private final Path rootLocation;
 
-    public static BufferedImage simpleResizeImage(BufferedImage originalImage, int targetWidth) {
-        return Scalr.resize(originalImage, targetWidth);
-    }
-
     @Autowired
     public FileSystemStorageService(StorageProperties properties) {
         this.rootLocation = Paths.get(properties.getLocation());
     }
-
 
     @PostConstruct
     @Override
@@ -48,6 +43,12 @@ public class FileSystemStorageService implements StorageService {
             throw new StorageException("Could not initialize storage location", e);
         }
     }
+
+
+    public static BufferedImage simpleResizeImage(BufferedImage originalImage, int targetWidth) {
+        return Scalr.resize(originalImage, targetWidth);
+    }
+
 
     @Override
     public String store(MultipartFile file) throws Exception {
