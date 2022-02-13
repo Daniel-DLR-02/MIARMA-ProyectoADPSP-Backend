@@ -1,6 +1,7 @@
 package com.salesianos.dam.repository;
 
+import com.salesianos.dam.model.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PostRepository  extends JpaRepository<PostRepository, Long> {
+public interface PostRepository  extends JpaRepository<Post, Long> {
 }

@@ -1,16 +1,18 @@
 package com.salesianos.dam.service;
 
+import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
+
 
 public interface StorageService {
 
     void init();
 
-    String store(MultipartFile file);
+    String store(MultipartFile file) throws IOException, Exception;
 
     Stream<Path> loadAll();
 

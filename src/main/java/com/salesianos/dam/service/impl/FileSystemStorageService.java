@@ -1,19 +1,23 @@
 package com.salesianos.dam.service.impl;
 
 import com.salesianos.dam.config.StorageProperties;
+import com.salesianos.dam.exception.StorageException;
 import com.salesianos.dam.service.StorageService;
+import com.salesianos.dam.utils.MediaTypeUrlResource;
+import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.salesianos.dam.exception.FileNotFoundException;
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,10 +29,15 @@ public class FileSystemStorageService implements StorageService {
 
     private final Path rootLocation;
 
+    public static BufferedImage simpleResizeImage(BufferedImage originalImage, int targetWidth) {
+        return Scalr.resize(originalImage, targetWidth);
+    }
+
     @Autowired
     public FileSystemStorageService(StorageProperties properties) {
         this.rootLocation = Paths.get(properties.getLocation());
     }
+
 
     @PostConstruct
     @Override
@@ -40,7 +49,6 @@ public class FileSystemStorageService implements StorageService {
         }
     }
 
-
     @Override
     public String store(MultipartFile file) throws Exception {
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
@@ -50,7 +58,7 @@ public class FileSystemStorageService implements StorageService {
 
         BufferedImage img = ImageIO.read(file.getInputStream());
 
-        BufferedImage escaleImg = simpleResizeImage(img , 4000);
+        BufferedImage escaleImg = simpleResizeImage(img , 120);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write( escaleImg, extension, baos );
@@ -58,13 +66,12 @@ public class FileSystemStorageService implements StorageService {
         MultipartFile newImage = new MockMultipartFile(name,baos.toByteArray());
 
         try {
-            // Si el fichero está vacío, excepción al canto
+
             if (newImage.isEmpty())
                 throw new StorageException("El fichero subido está vacío");
 
 
             while(Files.exists(rootLocation.resolve(filename))) {
-                // Tratamos de generar uno nuevo
 
 
                 String suffix = Long.toString(System.currentTimeMillis());
@@ -89,28 +96,50 @@ public class FileSystemStorageService implements StorageService {
 
     }
 
+
+
     @Override
     public Stream<Path> loadAll() {
-        return null;
+        try {
+            return Files.walk(this.rootLocation, 1)
+                    .filter(path -> !path.equals(this.rootLocation))
+                    .map(this.rootLocation::relativize);
+        }
+        catch (IOException e) {
+            throw new StorageException("Error al leer los ficheros almacenados", e);
+        }
     }
 
     @Override
     public Path load(String filename) {
-        return null;
+        return rootLocation.resolve(filename);
     }
 
     @Override
     public Resource loadAsResource(String filename) {
-        return null;
+
+        try {
+            Path file = load(filename);
+            MediaTypeUrlResource resource = new MediaTypeUrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            }
+            else {
+                throw new FileNotFoundException(
+                        "Could not read file: " + filename);
+            }
+        }
+        catch (MalformedURLException e) {
+            throw new FileNotFoundException("Could not read file: " + filename, e);
+        }
     }
 
     @Override
     public void deleteFile(String filename) {
-
     }
 
     @Override
     public void deleteAll() {
-
+        FileSystemUtils.deleteRecursively(rootLocation.toFile());
     }
 }
