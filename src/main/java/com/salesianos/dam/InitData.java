@@ -1,13 +1,11 @@
 package com.salesianos.dam;
 
-import com.salesianos.dam.model.Usuario;
-import com.salesianos.dam.model.dto.Usuario.CreateUsuarioDto;
+
 import com.salesianos.dam.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDate;
 
 @RequiredArgsConstructor
 @Component

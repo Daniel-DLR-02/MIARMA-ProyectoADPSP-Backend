@@ -49,6 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/auth/register").anonymous()
+                .antMatchers(HttpMethod.POST, "/auth/login").anonymous()
                 .anyRequest().anonymous();
 
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);

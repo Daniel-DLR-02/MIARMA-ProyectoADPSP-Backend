@@ -48,7 +48,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
                 .nick(createUsuarioDto.getNick())
                 .email(createUsuarioDto.getEmail())
                 .fechaNacimiento(createUsuarioDto.getFechaNacimiento())
-                .password(createUsuarioDto.getPassword1())
+                .password(createUsuarioDto.getPassword())
                 .perfilPublico(createUsuarioDto.isPublico())
                 .avatar(uriOriginal)
                 .avatarResized(uriResized)
