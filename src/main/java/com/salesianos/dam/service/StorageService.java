@@ -12,7 +12,9 @@ public interface StorageService {
 
     void init();
 
-    String store(MultipartFile file) throws IOException, Exception;
+    String storeOriginal(MultipartFile file) throws IOException, Exception;
+
+    String storeResized(MultipartFile file) throws IOException, Exception;
 
     Stream<Path> loadAll();
 

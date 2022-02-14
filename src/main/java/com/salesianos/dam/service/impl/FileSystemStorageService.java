@@ -49,9 +49,43 @@ public class FileSystemStorageService implements StorageService {
         return Scalr.resize(originalImage, targetWidth);
     }
 
+    @Override
+    public String storeOriginal(MultipartFile file) {
+        String filename = StringUtils.cleanPath(file.getOriginalFilename());
+        String newFilename = "";
+        try {
+            if (file.isEmpty())
+                throw new StorageException("El fichero subido está vacío");
+
+            newFilename = filename;
+            while(Files.exists(rootLocation.resolve(newFilename))) {
+                String extension = StringUtils.getFilenameExtension(newFilename);
+                String name = newFilename.replace("."+extension,"");
+
+                String suffix = Long.toString(System.currentTimeMillis());
+                suffix = suffix.substring(suffix.length()-6);
+
+                newFilename = name + "_" + suffix + "." + extension;
+
+            }
+
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, rootLocation.resolve(newFilename),
+                        StandardCopyOption.REPLACE_EXISTING);
+            }
+
+
+
+        } catch (IOException ex) {
+            throw new StorageException("Error en el almacenamiento del fichero: " + newFilename, ex);
+        }
+
+        return newFilename;
+
+    }
 
     @Override
-    public String store(MultipartFile file) throws Exception {
+    public String storeResized(MultipartFile file) throws Exception {
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
 
         String extension = StringUtils.getFilenameExtension(filename);

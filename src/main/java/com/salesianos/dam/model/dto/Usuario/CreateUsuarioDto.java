@@ -18,4 +18,5 @@ public class CreateUsuarioDto {
     private String password2;
     private LocalDate fechaNacimiento;
     private boolean publico;
+    private String role;
 }
