@@ -1,14 +1,12 @@
 package com.salesianos.dam.model;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.sun.istack.NotNull;
+
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Parameter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +17,16 @@ import java.util.List;
 import java.util.UUID;
 
 
+@NamedEntityGraph(
+        name = "usuario-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("nombre"),
+                @NamedAttributeNode("email"),
+                @NamedAttributeNode("follows"),
+                @NamedAttributeNode("posts"),
+
+        }
+        )
 @Entity
 @Table(name="usuario")
 @EntityListeners(AuditingEntityListener.class)
@@ -63,6 +71,12 @@ public class Usuario implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Usuario> follows;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Post> posts;
 
     private boolean perfilPublico;
 

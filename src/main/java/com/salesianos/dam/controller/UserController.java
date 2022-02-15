@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -70,6 +71,11 @@ public class UserController{
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(convertUserToJwtUserResponse(user, jwt));
 
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<Usuario> whoami(@AuthenticationPrincipal Usuario currentUser){
+        return ResponseEntity.ok(currentUser);
     }
 
     private JwtUsuarioResponse convertUserToJwtUserResponse(Usuario user, String jwt) {

@@ -29,5 +29,7 @@ public class Post {
 
     private String imagenAdjunta;
 
+    private String imagenAdjuntaResized;
+
     private boolean publica;
 }
