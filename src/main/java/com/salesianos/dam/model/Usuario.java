@@ -63,14 +63,13 @@ public class Usuario implements UserDetails {
     private UserRole role;
 
     @Builder.Default
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(
             name="usuario_follows",
             joinColumns= @JoinColumn(name="usuario_id"),
             inverseJoinColumns=@JoinColumn(name="followed_id")
     )
-    private Set<Usuario> follows = new HashSet<Usuario>();
+    private List<Usuario> follows = new ArrayList<>();
 
     /*
     @Builder.Default
@@ -85,9 +84,8 @@ public class Usuario implements UserDetails {
     */
 
     @Builder.Default
-    @JsonIgnore
-    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
-    private Set<Post> posts = new HashSet<>();
+    @OneToMany(mappedBy = "usuario")
+    private List<Post> posts = new ArrayList<>();
 
     private boolean perfilPublico;
 
