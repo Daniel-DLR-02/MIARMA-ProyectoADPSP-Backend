@@ -2,7 +2,6 @@ package com.salesianos.dam.model;
 
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.NaturalId;
@@ -18,7 +17,6 @@ import java.util.*;
 
 
 @Entity
-@Table(name="usuario")
 @EntityListeners(AuditingEntityListener.class)
 @Data
 @NoArgsConstructor
@@ -62,8 +60,7 @@ public class Usuario implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @Builder.Default
-    @ManyToMany
+    /*@ManyToMany
     @JoinTable(
             name="usuario_follows",
             joinColumns= @JoinColumn(name="usuario_id"),
@@ -80,11 +77,11 @@ public class Usuario implements UserDetails {
             joinColumns= @JoinColumn(name="usuario_id"),
             inverseJoinColumns=@JoinColumn(name="follower_id")
     )
-    private Set<Usuario> follow_request = new HashSet<Usuario>();
+    private List<Usuario> follow_request = new ArrayList<Usuario>();
     */
 
     @Builder.Default
-    @OneToMany(mappedBy = "usuario")
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
     private List<Post> posts = new ArrayList<>();
 
     private boolean perfilPublico;
@@ -131,13 +128,13 @@ public class Usuario implements UserDetails {
     }
 
     public void addPost(Post newPost){
-        newPost.setUsuario(this);
         this.getPosts().add(newPost);
+        newPost.setUsuario(this);
     }
 
-    public void removePost(Post postToRemove){
-        postToRemove.setUsuario(null);
-        this.getPosts().remove(postToRemove);
+    public void removePost(Post newPost){
+        newPost.setUsuario(null);
+        this.getPosts().remove(newPost);
     }
 
 }

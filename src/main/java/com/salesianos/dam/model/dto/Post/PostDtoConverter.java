@@ -3,23 +3,15 @@ package com.salesianos.dam.model.dto.Post;
 import com.salesianos.dam.model.Post;
 import com.salesianos.dam.model.Usuario;
 import com.salesianos.dam.model.dto.Usuario.UsuarioDtoConverter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class PostDtoConverter {
 
-    UsuarioDtoConverter userDtoConverter;
+    private final UsuarioDtoConverter userDtoConverter;
 
-    /*
-    public Post createPostDtoToPost(CreatePostDto createPostDto, Usuario createdBy){
-        return Post.builder()
-                .usuario(createdBy)
-                .titulo(createPostDto.getTitulo())
-                .texto(createPostDto.getTexto())
-                .publica(createPostDto.isPublica())
-                .build();
-    }
-    */
 
     public GetPostDto postToGetPostDto(Post post){
         return GetPostDto.builder()

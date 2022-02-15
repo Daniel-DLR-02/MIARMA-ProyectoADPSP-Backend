@@ -10,15 +10,7 @@ import javax.persistence.*;
 
 
 
-/*@NamedEntityGraph(
-        name = "grafo-post-usuario",
-        attributeNodes = {
-                @NamedAttributeNode("usuario")
-        }
-        )*/
 @Entity
-@Table(name="post")
-@EntityListeners(AuditingEntityListener.class)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,12 +18,12 @@ import javax.persistence.*;
 public class Post {
 
     @Id
+    @GeneratedValue
     private Long id;
 
     private String titulo;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "usuario_id")
+    @ManyToOne
     private Usuario usuario;
 
     private String texto;

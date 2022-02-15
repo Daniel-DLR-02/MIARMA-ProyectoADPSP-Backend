@@ -5,6 +5,7 @@ import com.salesianos.dam.model.UserRole;
 import com.salesianos.dam.model.Usuario;
 import com.salesianos.dam.model.dto.Post.CreatePostDto;
 import com.salesianos.dam.repository.PostRepository;
+import com.salesianos.dam.repository.UsuarioRepository;
 import com.salesianos.dam.service.PostService;
 import com.salesianos.dam.service.StorageService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository repository;
     private final StorageService storageService;
+    private final UsuarioRepository userRepos;
 
     @Override
     public Post save(CreatePostDto createPostDto, MultipartFile file,Usuario user) throws Exception {
@@ -43,12 +45,12 @@ public class PostServiceImpl implements PostService {
         Post newPost = Post.builder()
                 .titulo(createPostDto.getTitulo())
                 .texto(createPostDto.getTexto())
-                .ficheroAdjunto(filenameOriginal)
-                .ficheroAdjuntoResized(filenameResized)
+                .ficheroAdjunto(uriOriginal)
+                .ficheroAdjuntoResized(uriResized)
                 .publica(createPostDto.isPublica())
                 .build();
         user.addPost(newPost);
-
+        userRepos.save(user);
         return repository.save(newPost);
 
     }

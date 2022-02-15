@@ -18,7 +18,5 @@ public class GetUsuarioDto {
     private String email;
     private String avatar;
     private String resizedAvatar;
-    private List<Usuario> follows;
-    private List<Post> posts;
     private boolean perfilPublico;
 }

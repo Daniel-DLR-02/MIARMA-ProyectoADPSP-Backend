@@ -12,8 +12,6 @@ public class UsuarioDtoConverter {
                 .email(user.getEmail())
                 .avatar(user.getAvatar())
                 .resizedAvatar(user.getAvatarResized())
-                .posts(user.getPosts())
-                .follows(user.getFollows())
                 .perfilPublico(user.isPerfilPublico())
                 .build();
     }
