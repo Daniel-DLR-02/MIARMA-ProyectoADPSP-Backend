@@ -2,6 +2,8 @@ package com.salesianos.dam.controller;
 
 import com.salesianos.dam.model.Usuario;
 import com.salesianos.dam.model.dto.Usuario.CreateUsuarioDto;
+import com.salesianos.dam.model.dto.Usuario.GetUsuarioDto;
+import com.salesianos.dam.model.dto.Usuario.UsuarioDtoConverter;
 import com.salesianos.dam.security.dto.JwtUsuarioResponse;
 import com.salesianos.dam.security.dto.LoginDto;
 import com.salesianos.dam.security.jwt.JwtProvider;
@@ -30,21 +32,19 @@ public class UserController{
     private final UsuarioService service;
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
+    private final UsuarioDtoConverter usuarioDtoConverter;
 
     @PostMapping("/auth/register")
-    public ResponseEntity<Usuario> create(@RequestPart("file") MultipartFile file,
-                                    @RequestPart("user") CreateUsuarioDto newUsuario) throws Exception {
+    public ResponseEntity<GetUsuarioDto> create(@RequestPart("file") MultipartFile file,
+                                                @RequestPart("user") CreateUsuarioDto newUsuario) throws Exception {
 
         Usuario saved = service.save(newUsuario,file);
 
         if(saved == null)
             return ResponseEntity.badRequest().build();
         else
-            return ResponseEntity.status(HttpStatus.OK).body(saved);
-            //return ResponseEntity.httpStatus(HttpStatus.OK).build(usuarioDtoConverter.usuarioToGetUsuarioDto(saved));
+            return ResponseEntity.status(HttpStatus.OK).body(usuarioDtoConverter.usuarioToGetUsuarioDto(saved));
 
-        //return ResponseEntity.status(HttpStatus.CREATED)
-        //        .body(service.save(newUsuario, file));
 
 
     }
