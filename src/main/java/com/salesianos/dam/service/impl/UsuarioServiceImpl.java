@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -25,6 +26,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 
     private final UsuarioRepository repository;
     private final StorageService storageService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Usuario save(CreateUsuarioDto createUsuarioDto, MultipartFile file) throws Exception {
@@ -48,7 +50,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
                 .nick(createUsuarioDto.getNick())
                 .email(createUsuarioDto.getEmail())
                 .fechaNacimiento(createUsuarioDto.getFechaNacimiento())
-                .password(createUsuarioDto.getPassword())
+                .password(passwordEncoder.encode(createUsuarioDto.getPassword()))
                 .perfilPublico(createUsuarioDto.isPublico())
                 .avatar(uriOriginal)
                 .avatarResized(uriResized)
@@ -69,8 +71,8 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return this.repository.findFirstByEmail(email)
-                .orElseThrow(()-> new UsernameNotFoundException(email+ "no encontrado"));
+    public UserDetails loadUserByUsername(String nick) throws UsernameNotFoundException {
+        return this.repository.findFirstByNick(nick)
+                .orElseThrow(()-> new UsernameNotFoundException(nick+ "no encontrado"));
     }
 }

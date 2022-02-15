@@ -22,7 +22,7 @@ public class JwtProvider {
     public static final String TOKEN_HEADER = "Authorization";
     public static final String TOKEN_PREFIX = "Bearer ";
 
-    @Value("${jwt.secret:asdffewergfdxcvghjyuiuoohkjhkdsetuadsxzcvbghfd}")
+    @Value("${jwt.secret:asdfghjklnzxcvbnmqwertyuiop")
     private String jwtSecret;
 
     @Value("${jwt.duration:86400}")

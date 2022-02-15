@@ -45,12 +45,13 @@ public class Usuario implements UserDetails {
 
     private String nombre;
 
+    @NaturalId
+    @Column(unique = true,updatable = false)
     private String nick;
 
     @NaturalId
     @Column(unique = true,updatable = false)
     private String email;
-
 
     private LocalDate fechaNacimiento;
 

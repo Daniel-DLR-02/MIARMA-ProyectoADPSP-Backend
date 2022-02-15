@@ -31,11 +31,19 @@ public class UserController{
     private final JwtProvider jwtProvider;
 
     @PostMapping("/auth/register")
-    public ResponseEntity<?> create(@RequestPart("file") MultipartFile file,
+    public ResponseEntity<Usuario> create(@RequestPart("file") MultipartFile file,
                                     @RequestPart("user") CreateUsuarioDto newUsuario) throws Exception {
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(service.save(newUsuario, file));
+        Usuario saved = service.save(newUsuario,file);
+
+        if(saved == null)
+            return ResponseEntity.badRequest().build();
+        else
+            return ResponseEntity.status(HttpStatus.OK).body(saved);
+            //return ResponseEntity.httpStatus(HttpStatus.OK).build(usuarioDtoConverter.usuarioToGetUsuarioDto(saved));
+
+        //return ResponseEntity.status(HttpStatus.CREATED)
+        //        .body(service.save(newUsuario, file));
 
 
     }
