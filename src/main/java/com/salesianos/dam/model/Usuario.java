@@ -2,6 +2,7 @@ package com.salesianos.dam.model;
 
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.NaturalId;
@@ -65,7 +66,11 @@ public class Usuario implements UserDetails {
             name="usuario_follows",
             joinColumns= @JoinColumn(name="usuario_id"),
             inverseJoinColumns=@JoinColumn(name="followed_id")
-    )
+    )*/
+    @OneToMany
+    @JoinColumn(referencedColumnName = "id")
+    @JsonBackReference
+    @Builder.Default
     private List<Usuario> follows = new ArrayList<>();
 
     /*
