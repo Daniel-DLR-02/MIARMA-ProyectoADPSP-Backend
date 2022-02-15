@@ -2,6 +2,7 @@ package com.salesianos.dam.model;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.NaturalId;
@@ -12,19 +13,17 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 
-@NamedEntityGraph(
-        name = "usuario-entity-graph",
-        attributeNodes = {
-                @NamedAttributeNode("nombre"),
-                @NamedAttributeNode("email"),
-                @NamedAttributeNode("follows"),
-                @NamedAttributeNode("posts"),
 
+@NamedEntityGraph(
+        name = "grafo-usuario-follower",
+        attributeNodes = {
+                @NamedAttributeNode("follows")
         }
         )
 @Entity
@@ -72,11 +71,16 @@ public class Usuario implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
+    @Builder.Default
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY)
-    private List<Usuario> follows;
+    @JoinColumn(name="usuario_id")
+    private List<Usuario> follows = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Post> posts;
+    @Builder.Default
+    @JsonIgnore
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
+    private List<Post> posts = new ArrayList<>();
 
     private boolean perfilPublico;
 

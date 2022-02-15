@@ -1,5 +1,6 @@
 package com.salesianos.dam.repository;
 
+import com.salesianos.dam.model.Post;
 import com.salesianos.dam.model.Usuario;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,8 +12,9 @@ public interface UsuarioRepository  extends JpaRepository<Usuario, UUID> {
 
     Optional<Usuario> findFirstByNick(String nick);
 
-    @EntityGraph(value = "usuario-entity-graph", type = EntityGraph.EntityGraphType.LOAD)
-    List<Usuario> findByNombre(String nombre);
+    @EntityGraph("grafo-usuario-follower")
+    List<Usuario> findByIdNotNull();
+
 
 }
 

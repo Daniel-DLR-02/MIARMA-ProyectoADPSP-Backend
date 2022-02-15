@@ -6,11 +6,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
+
+
+@NamedEntityGraph(
+        name = "grafo-post-usuario",
+        attributeNodes = {
+                @NamedAttributeNode("usuario")
+        }
+        )
 @Entity
 @Table(name="post")
 @EntityListeners(AuditingEntityListener.class)
@@ -24,6 +29,10 @@ public class Post {
     private Long id;
 
     private String titulo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 
     private String texto;
 
