@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    @EntityGraph(value = "grafo-usuario-usuario", type = EntityGraph.EntityGraphType.LOAD)
-    List<Post> findByIdNotNull();
+    //@EntityGraph(value = "grafo-usuario-usuario", type = EntityGraph.EntityGraphType.LOAD)
+    //List<Post> findByIdNotNull();
 
 }

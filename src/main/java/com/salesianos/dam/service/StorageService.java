@@ -14,7 +14,7 @@ public interface StorageService {
 
     String storeOriginal(MultipartFile file) throws IOException, Exception;
 
-    String storeResized(MultipartFile file) throws IOException, Exception;
+    String storeResized(MultipartFile file,int width) throws IOException, Exception;
 
     Stream<Path> loadAll();
 

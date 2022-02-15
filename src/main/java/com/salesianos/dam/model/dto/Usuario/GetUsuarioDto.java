@@ -1,9 +1,10 @@
 package com.salesianos.dam.model.dto.Usuario;
 
 import com.salesianos.dam.model.Post;
+import com.salesianos.dam.model.Usuario;
 import lombok.*;
 
-import java.util.List;
+import java.util.Set;
 
 
 @AllArgsConstructor
@@ -16,6 +17,7 @@ public class GetUsuarioDto {
     private String email;
     private String avatar;
     private String resizedAvatar;
-    private List<Post> posts;
+    private Set<Usuario> follows;
+    private Set<Post> posts;
     private boolean perfilPublico;
 }

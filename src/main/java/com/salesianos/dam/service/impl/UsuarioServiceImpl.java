@@ -38,7 +38,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
                 .path(filenameOriginal)
                 .toUriString();
 
-        String filenameResized = storageService.storeResized(file);
+        String filenameResized = storageService.storeResized(file,128);
 
         String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/download/")

@@ -13,19 +13,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 
-@NamedEntityGraph(
-        name = "grafo-usuario-follower",
-        attributeNodes = {
-                @NamedAttributeNode("follows")
-        }
-        )
 @Entity
 @Table(name="usuario")
 @EntityListeners(AuditingEntityListener.class)
@@ -74,13 +65,29 @@ public class Usuario implements UserDetails {
     @Builder.Default
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name="usuario_id")
-    private List<Usuario> follows = new ArrayList<>();
+    @JoinTable(
+            name="usuario_follows",
+            joinColumns= @JoinColumn(name="usuario_id"),
+            inverseJoinColumns=@JoinColumn(name="followed_id")
+    )
+    private Set<Usuario> follows = new HashSet<Usuario>();
+
+    /*
+    @Builder.Default
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name="follow_request",
+            joinColumns= @JoinColumn(name="usuario_id"),
+            inverseJoinColumns=@JoinColumn(name="follower_id")
+    )
+    private Set<Usuario> follow_request = new HashSet<Usuario>();
+    */
 
     @Builder.Default
     @JsonIgnore
-    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
-    private List<Post> posts = new ArrayList<>();
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
+    private Set<Post> posts = new HashSet<>();
 
     private boolean perfilPublico;
 
@@ -123,6 +130,16 @@ public class Usuario implements UserDetails {
     public boolean isEnabled() {
 
         return true;
+    }
+
+    public void addPost(Post newPost){
+        newPost.setUsuario(this);
+        this.getPosts().add(newPost);
+    }
+
+    public void removePost(Post postToRemove){
+        postToRemove.setUsuario(null);
+        this.getPosts().remove(postToRemove);
     }
 
 }
