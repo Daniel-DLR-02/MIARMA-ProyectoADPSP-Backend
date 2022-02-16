@@ -30,9 +30,9 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository repository;
+    private final UsuarioRepository usuarioRepository;
     private final PostDtoConverter dtoConverter;
     private final StorageService storageService;
-    private final UsuarioRepository userRepos;
 
     @Override
     public Post save(CreatePostDto createPostDto, MultipartFile file,Usuario user) throws Exception {
@@ -55,12 +55,12 @@ public class PostServiceImpl implements PostService {
                 .titulo(createPostDto.getTitulo())
                 .texto(createPostDto.getTexto())
                 .ficheroAdjunto(uriOriginal)
+                .usuario(user)
                 .ficheroAdjuntoResized(uriResized)
                 .publica(createPostDto.isPublica())
                 .build();
 
-        user.addPost(newPost);
-        userRepos.save(user);
+        usuarioRepository.save(user);
         return repository.save(newPost);
 
     }
@@ -70,8 +70,7 @@ public class PostServiceImpl implements PostService {
 
         Post post = repository.getById(id);
 
-        post.getUsuario().removePost(post);
-
+        post.setUsuario(null);
         Path rutaFichero = storageService.load(StringUtils.cleanPath(String.valueOf(post.getFicheroAdjunto())).replace("http://localhost:8080/download/",""));
         storageService.deleteFile(rutaFichero);
         Path rutaFicheroReescalado = storageService.load(StringUtils.cleanPath(String.valueOf(post.getFicheroAdjuntoResized())).replace("http://localhost:8080/download/",""));
@@ -121,6 +120,8 @@ public class PostServiceImpl implements PostService {
         postAEditar.setTitulo( postEdited.getTitulo());
         postAEditar.setPublica( postEdited.isPublica());
 
+        repository.save(postAEditar);
+
         return postAEditar;
     }
 
@@ -129,4 +130,37 @@ public class PostServiceImpl implements PostService {
 
         return repository.findPostPublic().stream().map(dtoConverter::postToGetPostDto).collect(Collectors.toList());
     }
+
+    @Override
+    public List<GetPostDto> getUserPosts(UUID id) {
+
+        return repository.findCurrentUserPostsWithId(id).stream().map(dtoConverter::postToGetPostDto).collect(Collectors.toList());
+
+    }
+
+    @Override
+    public Post getPostById(Long id, Usuario user) {
+
+        Optional<Post> post = repository.findById(id);
+
+        if(post.isEmpty()) {
+            return null;
+        }else {
+            if (post.get().isPublica()) {
+                return post.get();
+            } else {
+                for (Usuario usuarioDeLaLista : usuarioRepository.findFollowers(post.get().getUsuario().getId())) {
+                    if (usuarioDeLaLista.getId().equals(user.getId())) {
+                        return post.get();
+                    }else {
+                        return null;
+                    }
+                }
+                return null;
+            }
+        }
+    }
+
+
+
 }

@@ -44,9 +44,20 @@ public class PostController {
 
     }
 
+
     @GetMapping("/public")
     public ResponseEntity<List<GetPostDto>> getAllPublic(){
         return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPublic());
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<List<GetPostDto>> getUserPosts(@AuthenticationPrincipal Usuario currentUser){
+        return  ResponseEntity.status(HttpStatus.OK).body(postService.getUserPosts(currentUser.getId()));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<GetPostDto> getPostById(@PathVariable Long id,@AuthenticationPrincipal Usuario currentUser){
+        return ResponseEntity.status(HttpStatus.OK).body(postDtoConverter.postToGetPostDto(postService.getPostById(id, currentUser)));
     }
 
     @PutMapping("/{id}")

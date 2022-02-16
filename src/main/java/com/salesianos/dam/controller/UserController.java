@@ -1,6 +1,7 @@
 package com.salesianos.dam.controller;
 
 import com.salesianos.dam.model.Usuario;
+import com.salesianos.dam.model.dto.Peticion.GetPeticionDto;
 import com.salesianos.dam.model.dto.Usuario.CreateUsuarioDto;
 import com.salesianos.dam.model.dto.Usuario.GetUsuarioDto;
 import com.salesianos.dam.model.dto.Usuario.UsuarioDtoConverter;
@@ -11,6 +12,7 @@ import com.salesianos.dam.service.StorageService;
 import com.salesianos.dam.service.UsuarioService;
 import com.salesianos.dam.utils.MediaTypeUrlResource;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +49,18 @@ public class UserController{
 
 
 
+    }
+
+    @PostMapping("follow/{nick}")
+    public ResponseEntity<GetPeticionDto> createFollowrequest(@AuthenticationPrincipal Usuario currentUser,
+                                                              @PathVariable String nick){
+        return ResponseEntity.status(HttpStatus.OK).body(service.createFollowRequest(currentUser,nick));
+    }
+
+    @PostMapping("follow/accept/{id}")
+    public ResponseEntity<GetUsuarioDto> accepFollowRequest(@AuthenticationPrincipal Usuario currentUser,
+                                                              @PathVariable Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioDtoConverter.usuarioToGetUsuarioDto(service.acceptFollowRequest(currentUser,id)));
     }
 
     @PostMapping("/auth/login")

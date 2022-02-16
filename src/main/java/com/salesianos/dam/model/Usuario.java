@@ -18,6 +18,7 @@ import java.util.*;
 
 
 @Entity
+@Table(name="usuario")
 @EntityListeners(AuditingEntityListener.class)
 @Data
 @NoArgsConstructor
@@ -59,32 +60,20 @@ public class Usuario implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    /*
+
+    @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "relation",
+    @JoinTable(name = "follows",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "following_id"))
-    )*/
-    @OneToMany
-    @JoinColumn(referencedColumnName = "id")
-    @JsonBackReference
-    @Builder.Default
     private List<Usuario> follows = new ArrayList<>();
 
-    /*
     @Builder.Default
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name="follow_request",
-            joinColumns= @JoinColumn(name="usuario_id"),
-            inverseJoinColumns=@JoinColumn(name="follower_id")
-    )
-    private List<Usuario> follow_request = new ArrayList<Usuario>();
-    */
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
+    private List<SolicitudSeguimiento> follow_request = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
     private List<Post> posts = new ArrayList<>();
 
     private boolean perfilPublico;
@@ -130,14 +119,5 @@ public class Usuario implements UserDetails {
         return true;
     }
 
-    public void addPost(Post newPost){
-        this.getPosts().add(newPost);
-        newPost.setUsuario(this);
-    }
-
-    public void removePost(Post newPost){
-        newPost.setUsuario(null);
-        this.getPosts().remove(newPost);
-    }
 
 }

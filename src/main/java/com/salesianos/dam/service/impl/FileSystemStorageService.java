@@ -99,12 +99,13 @@ public class FileSystemStorageService implements StorageService {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write( escaleImg, extension, baos );
 
-        MultipartFile newImage = new MockMultipartFile(name,baos.toByteArray());
+        InputStream inputS = new ByteArrayInputStream(baos.toByteArray());
+
 
 
         try {
 
-            if (newImage.isEmpty())
+            if (file.isEmpty())
                 throw new StorageException("El fichero subido está vacío");
 
 
@@ -117,7 +118,7 @@ public class FileSystemStorageService implements StorageService {
                 filename = name + "_" + suffix + "." + extension;
             }
 
-            try (InputStream inputStream = newImage.getInputStream()) {
+            try (InputStream inputStream = inputS) {
                 Files.copy(inputStream, rootLocation.resolve(filename),
                         StandardCopyOption.REPLACE_EXISTING);
             }

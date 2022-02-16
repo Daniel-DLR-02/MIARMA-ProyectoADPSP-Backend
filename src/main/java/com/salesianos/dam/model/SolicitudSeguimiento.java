@@ -4,34 +4,27 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-
-
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Post {
+public class SolicitudSeguimiento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String titulo;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id")
+    @ManyToOne
     private Usuario usuario;
 
-    private String texto;
+    @PreRemove
+    public void borrarSolicitud(){
+        usuario.getFollow_request().remove(this);
+        this.setUsuario(null);
+    }
 
-    private String ficheroAdjunto;
-
-    private String ficheroAdjuntoResized;
-
-    private boolean publica;
 }
