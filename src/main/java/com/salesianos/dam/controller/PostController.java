@@ -1,5 +1,6 @@
 package com.salesianos.dam.controller;
 
+import com.salesianos.dam.exception.PostNotFoundException;
 import com.salesianos.dam.model.Post;
 import com.salesianos.dam.model.Usuario;
 import com.salesianos.dam.model.dto.Post.CreatePostDto;
@@ -7,6 +8,7 @@ import com.salesianos.dam.model.dto.Post.GetPostDto;
 import com.salesianos.dam.model.dto.Post.PostDtoConverter;
 import com.salesianos.dam.service.PostService;
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,6 +40,28 @@ public class PostController {
 
 
 
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<GetPostDto> edit(@RequestPart("file") MultipartFile file,
+                                             @RequestPart("post") CreatePostDto editedPost,
+                                             @PathVariable Long id) throws Exception {
+
+        Optional<Post> postBuscado = postService.findById(id);
+
+        if(postBuscado.isPresent()){
+
+            Post postAEditar = postBuscado.get();
+
+            postAEditar.setTexto(editedPost.getTexto());
+            postAEditar.setTexto( editedPost.getTitulo());
+            postAEditar.setPublica( editedPost.isPublica());
+
+            retrun ResponseEntity.stat
+
+        }else {
+            throw new PostNotFoundException ("Post no encontrado");
+        }
     }
 
     @DeleteMapping("/{id}")

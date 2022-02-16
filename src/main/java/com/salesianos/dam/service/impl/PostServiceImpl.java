@@ -10,11 +10,13 @@ import com.salesianos.dam.service.PostService;
 import com.salesianos.dam.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -62,14 +64,15 @@ public class PostServiceImpl implements PostService {
     public void delete(Long id) throws IOException {
 
         Post post = repository.getById(id);
-        Path fichero = Path.of(post.getFicheroAdjunto().replace("http://localhost:8080/download/", ""));
-        Path ficheroReescalado = Path.of(post.getFicheroAdjunto().replace("http://localhost:8080/download/", ""));
 
         post.getUsuario().removePost(post);
 
-        storageService.deleteFile(fichero);
-        storageService.deleteFile(ficheroReescalado);
+        Path rutaFichero = storageService.load(StringUtils.cleanPath(String.valueOf(post.getFicheroAdjunto())).replace("http://localhost:8080/download/",""));
+        storageService.deleteFile(rutaFichero);
+        Path rutaFicheroReescalado = storageService.load(StringUtils.cleanPath(String.valueOf(post.getFicheroAdjuntoResized())).replace("http://localhost:8080/download/",""));
+        storageService.deleteFile(rutaFicheroReescalado);
 
+        repository.delete(post);
     }
 
     @Override
@@ -78,7 +81,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Optional<Post> findById(UUID postId) {
-        return Optional.empty();
+    public Optional<Post> findById(Long postId) {
+        return repository.findById(postId);
+    }
+
+    @Override
+    public Post getById(Long postId) {
+        return repository.getById(postId);
     }
 }

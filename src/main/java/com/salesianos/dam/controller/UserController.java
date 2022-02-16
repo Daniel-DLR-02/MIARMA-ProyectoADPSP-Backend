@@ -74,8 +74,8 @@ public class UserController{
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Usuario> whoami(@AuthenticationPrincipal Usuario currentUser){
-        return ResponseEntity.ok(currentUser);
+    public ResponseEntity<GetUsuarioDto> whoami(@AuthenticationPrincipal Usuario currentUser){
+        return ResponseEntity.ok(usuarioDtoConverter.usuarioToGetUsuarioDto(currentUser));
     }
 
     private JwtUsuarioResponse convertUserToJwtUserResponse(Usuario user, String jwt) {

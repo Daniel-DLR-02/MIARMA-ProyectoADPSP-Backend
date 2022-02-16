@@ -18,6 +18,8 @@ public interface PostService {
 
     List<Post> findAll();
 
-    Optional<Post> findById(UUID postId);
+    Optional<Post> findById(Long postId);
+
+    Post getById(Long postId);
 
 }
