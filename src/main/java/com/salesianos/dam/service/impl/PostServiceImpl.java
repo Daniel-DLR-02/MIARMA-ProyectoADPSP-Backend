@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -49,9 +51,24 @@ public class PostServiceImpl implements PostService {
                 .ficheroAdjuntoResized(uriResized)
                 .publica(createPostDto.isPublica())
                 .build();
+
         user.addPost(newPost);
         userRepos.save(user);
         return repository.save(newPost);
+
+    }
+
+    @Override
+    public void delete(Long id) throws IOException {
+
+        Post post = repository.getById(id);
+        Path fichero = Path.of(post.getFicheroAdjunto().replace("http://localhost:8080/download/", ""));
+        Path ficheroReescalado = Path.of(post.getFicheroAdjunto().replace("http://localhost:8080/download/", ""));
+
+        post.getUsuario().removePost(post);
+
+        storageService.deleteFile(fichero);
+        storageService.deleteFile(ficheroReescalado);
 
     }
 

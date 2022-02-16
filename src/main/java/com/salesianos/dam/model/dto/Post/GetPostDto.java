@@ -9,6 +9,7 @@ import lombok.*;
 @Getter
 @Setter
 public class GetPostDto {
+    private Long id;
     private String titulo;
     private GetUsuarioDto usuario;
     private String texto;

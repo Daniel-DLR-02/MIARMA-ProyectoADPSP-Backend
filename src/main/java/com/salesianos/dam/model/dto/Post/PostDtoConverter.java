@@ -15,6 +15,7 @@ public class PostDtoConverter {
 
     public GetPostDto postToGetPostDto(Post post){
         return GetPostDto.builder()
+                .id(post.getId())
                 .titulo(post.getTitulo())
                 .usuario(userDtoConverter.usuarioToGetUsuarioDto(post.getUsuario()))
                 .texto(post.getTexto())
