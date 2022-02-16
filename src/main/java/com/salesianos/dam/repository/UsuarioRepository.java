@@ -23,6 +23,14 @@ public interface UsuarioRepository  extends JpaRepository<Usuario, UUID> {
     List<Usuario> findFollowers(@Param("followed_id") UUID id);
 
 
+    @Query(value="""
+            SELECT * FROM usuario u
+            WHERE u.id IN (SELECT id_seguidor FROM solicitud_seguimiento
+                            WHERE usuario_id = :id_user_requested)
+            """,nativeQuery = true)
+    List<Usuario> getUsersWithRequestToUser(@Param("id_user_requested") UUID id);
+
+
 
 }
 

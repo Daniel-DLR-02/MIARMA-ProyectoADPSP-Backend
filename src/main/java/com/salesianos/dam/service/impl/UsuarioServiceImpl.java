@@ -9,6 +9,7 @@ import com.salesianos.dam.model.Usuario;
 import com.salesianos.dam.model.dto.Peticion.GetPeticionDto;
 import com.salesianos.dam.model.dto.Usuario.CreateUsuarioDto;
 import com.salesianos.dam.model.dto.Usuario.GetUsuarioDto;
+import com.salesianos.dam.model.dto.Usuario.UsuarioDtoConverter;
 import com.salesianos.dam.repository.SolicitudSeguimientoRepository;
 import com.salesianos.dam.repository.UsuarioRepository;
 import com.salesianos.dam.service.StorageService;
@@ -22,15 +23,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +35,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 
     private final UsuarioRepository repository;
     private final StorageService storageService;
+    private final UsuarioDtoConverter dtoConverter;
     private final PasswordEncoder passwordEncoder;
     private final SolicitudSeguimientoRepository requestRepos;
 
@@ -82,16 +80,22 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
         Optional<Usuario> usuarioReclamado = repository.findByNick(nick);
 
             if(usuarioReclamado.isPresent()) {
-                SolicitudSeguimiento followRequest = SolicitudSeguimiento.builder()
-                        .usuario(usuarioReclamado.get())
-                        .build();
-                requestRepos.save(followRequest);
-                repository.save(currentUser);
-                return GetPeticionDto.builder()
-                        .idSolicitud(followRequest.getId())
-                        .idSeguidor(currentUser.getId())
-                        .idSeguido(usuarioReclamado.get().getId())
-                        .build();
+                if(!(usuarioReclamado.get().getId().equals(currentUser.getId())||currentUser.getFollows().contains(usuarioReclamado.get()))){
+                    SolicitudSeguimiento followRequest = SolicitudSeguimiento.builder()
+                            .idSeguidor(currentUser.getId())
+                            .usuario(usuarioReclamado.get())
+                            .build();
+                    requestRepos.save(followRequest);
+                    repository.save(currentUser);
+                    return GetPeticionDto.builder()
+                            .idSolicitud(followRequest.getId())
+                            .idSeguidor(currentUser.getId())
+                            .idSeguido(usuarioReclamado.get().getId())
+                            .build();
+                }
+                else{
+                    throw new UnauthorizedRequestException("Un usuario no puede seguirse así mismo ni a un usuario que ya sigue.");
+                }
             }
             else{
                 throw new UserNotFoundException("Usuario reclamado no encontrado.");
@@ -99,12 +103,13 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     }
 
     @Override
-    public Usuario acceptFollowRequest(Usuario currentUser, Long idRequest) {
-        if(requestRepos.findById(idRequest).isPresent()){
-            if(requestRepos.findById(idRequest).get().getUsuario().getId().equals(currentUser.getId())){
+    public void acceptFollowRequest(Usuario currentUser, Long idRequest) {
+        Optional<SolicitudSeguimiento> solicitudSeguimiento = requestRepos.findById(idRequest);
+        if(solicitudSeguimiento.isPresent()){
+            if(solicitudSeguimiento.get().getUsuario().getId().equals(currentUser.getId())){
+                currentUser.getFollows().add(solicitudSeguimiento.get().getUsuario());
                 requestRepos.deleteById(idRequest);
-                currentUser.getFollows().add(currentUser);
-                return repository.save(currentUser);
+                repository.save(currentUser);
             }else{
                 throw new UnauthorizedRequestException("Esta petición de seguimiento no pertenece al perfil logueado.") ;
             }
@@ -112,6 +117,27 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
         else{
             throw new RequestNotFoundException("Petición de seguimiento no encontrada");
         }
+    }
+
+    @Override
+    public void declineFollowRequest(Usuario currentUser, Long idRequest) {
+        Optional<SolicitudSeguimiento> solicitudSeguimiento = requestRepos.findById(idRequest);
+        if(solicitudSeguimiento.isPresent()){
+            if(solicitudSeguimiento.get().getUsuario().getId().equals(currentUser.getId())){
+                requestRepos.deleteById(idRequest);
+            }else{
+                throw new UnauthorizedRequestException("Esta petición de seguimiento no pertenece al perfil logueado.") ;
+            }
+        }
+        else{
+            throw new RequestNotFoundException("Petición de seguimiento no encontrada");
+        }
+    }
+
+    @Override
+    public List<GetUsuarioDto> peticionesDelUsuarioActual(Usuario currentUser) {
+        List<Usuario> listaDeUsuariosConPeticion = repository.getUsersWithRequestToUser(currentUser.getId());
+        return listaDeUsuariosConPeticion.stream().map(dtoConverter::usuarioToGetUsuarioDto).collect(Collectors.toList());
     }
 
     @Override

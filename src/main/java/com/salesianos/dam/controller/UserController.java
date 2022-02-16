@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -58,9 +59,22 @@ public class UserController{
     }
 
     @PostMapping("follow/accept/{id}")
-    public ResponseEntity<GetUsuarioDto> accepFollowRequest(@AuthenticationPrincipal Usuario currentUser,
+    public ResponseEntity<GetUsuarioDto> acceptFollowRequest(@AuthenticationPrincipal Usuario currentUser,
                                                               @PathVariable Long id){
-        return ResponseEntity.status(HttpStatus.OK).body(usuarioDtoConverter.usuarioToGetUsuarioDto(service.acceptFollowRequest(currentUser,id)));
+        service.acceptFollowRequest(currentUser,id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("follow/decline/{id}")
+    public ResponseEntity<GetUsuarioDto> declineFollowRequest(@AuthenticationPrincipal Usuario currentUser,
+                                                            @PathVariable Long id){
+        service.declineFollowRequest(currentUser,id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @GetMapping("follow/list")
+    public ResponseEntity<List<GetUsuarioDto>> getRequestList(@AuthenticationPrincipal Usuario currentUser){
+        return ResponseEntity.status(HttpStatus.OK).body(service.peticionesDelUsuarioActual(currentUser));
     }
 
     @PostMapping("/auth/login")

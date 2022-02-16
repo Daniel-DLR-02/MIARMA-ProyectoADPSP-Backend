@@ -20,5 +20,11 @@ public interface UsuarioService {
 
     GetPeticionDto createFollowRequest(Usuario currentUser, String nick);
 
-    Usuario acceptFollowRequest(Usuario currentUser,Long idRequest);
+    void acceptFollowRequest(Usuario currentUser,Long idRequest);
+
+    void declineFollowRequest(Usuario currentUser,Long idRequest);
+
+    List<GetUsuarioDto> peticionesDelUsuarioActual(Usuario currentUser);
+
+
 }
