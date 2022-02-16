@@ -9,6 +9,7 @@ import com.salesianos.dam.model.dto.Post.PostDtoConverter;
 import com.salesianos.dam.service.PostService;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.implementation.bytecode.Throw;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -40,6 +42,11 @@ public class PostController {
 
 
 
+    }
+
+    @GetMapping("/public")
+    public ResponseEntity<List<GetPostDto>> getAllPublic(){
+        return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPublic());
     }
 
     @PutMapping("/{id}")

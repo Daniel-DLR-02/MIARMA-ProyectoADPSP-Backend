@@ -4,11 +4,14 @@ import com.salesianos.dam.model.Post;
 import com.salesianos.dam.model.UserRole;
 import com.salesianos.dam.model.Usuario;
 import com.salesianos.dam.model.dto.Post.CreatePostDto;
+import com.salesianos.dam.model.dto.Post.GetPostDto;
+import com.salesianos.dam.model.dto.Post.PostDtoConverter;
 import com.salesianos.dam.repository.PostRepository;
 import com.salesianos.dam.repository.UsuarioRepository;
 import com.salesianos.dam.service.PostService;
 import com.salesianos.dam.service.StorageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,12 +23,14 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
     private final PostRepository repository;
+    private final PostDtoConverter dtoConverter;
     private final StorageService storageService;
     private final UsuarioRepository userRepos;
 
@@ -117,5 +122,11 @@ public class PostServiceImpl implements PostService {
         postAEditar.setPublica( postEdited.isPublica());
 
         return postAEditar;
+    }
+
+    @Override
+    public List<GetPostDto> getAllPublic() {
+
+        return repository.findPostPublic().stream().map(dtoConverter::postToGetPostDto).collect(Collectors.toList());
     }
 }

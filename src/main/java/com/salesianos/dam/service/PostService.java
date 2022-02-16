@@ -3,6 +3,8 @@ package com.salesianos.dam.service;
 import com.salesianos.dam.model.Post;
 import com.salesianos.dam.model.Usuario;
 import com.salesianos.dam.model.dto.Post.CreatePostDto;
+import com.salesianos.dam.model.dto.Post.GetPostDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -24,4 +26,5 @@ public interface PostService {
 
     Post edit(Post postAEditar,CreatePostDto postEdited,MultipartFile file) throws Exception;
 
+    List<GetPostDto> getAllPublic();
 }
