@@ -83,7 +83,7 @@ public class UserController{
                 .nick(user.getNick())
                 .email(user.getEmail())
                 .role(user.getRole().name())
-                .avatar(user.getAvatarResized())
+                .avatar(user.getAvatar())
                 .token(jwt)
                 .build();
     }
