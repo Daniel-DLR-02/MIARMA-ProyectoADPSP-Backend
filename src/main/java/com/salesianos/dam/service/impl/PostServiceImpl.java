@@ -89,4 +89,33 @@ public class PostServiceImpl implements PostService {
     public Post getById(Long postId) {
         return repository.getById(postId);
     }
+
+    @Override
+    public Post edit(Post postAEditar,CreatePostDto postEdited,MultipartFile file) throws Exception {
+
+        if(!file.isEmpty()){
+            String filenameOriginal = storageService.storeOriginal(file);
+
+            String uriOriginal = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/download/")
+                    .path(filenameOriginal)
+                    .toUriString();
+
+            String filenameResized = storageService.storeResized(file,1024);
+
+            String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/download/")
+                    .path(filenameResized)
+                    .toUriString();
+            postAEditar.setFicheroAdjunto(uriOriginal);
+            postAEditar.setFicheroAdjuntoResized(uriResized);
+
+        }
+
+        postAEditar.setTexto(postEdited.getTexto());
+        postAEditar.setTitulo( postEdited.getTitulo());
+        postAEditar.setPublica( postEdited.isPublica());
+
+        return postAEditar;
+    }
 }

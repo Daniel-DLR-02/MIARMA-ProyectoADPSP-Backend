@@ -49,19 +49,17 @@ public class PostController {
 
         Optional<Post> postBuscado = postService.findById(id);
 
+
         if(postBuscado.isPresent()){
 
             Post postAEditar = postBuscado.get();
 
-            postAEditar.setTexto(editedPost.getTexto());
-            postAEditar.setTexto( editedPost.getTitulo());
-            postAEditar.setPublica( editedPost.isPublica());
-
-            retrun ResponseEntity.stat
+            return ResponseEntity.status(HttpStatus.OK).body(postDtoConverter.postToGetPostDto(postService.edit(postAEditar,editedPost,file)));
 
         }else {
             throw new PostNotFoundException ("Post no encontrado");
         }
+
     }
 
     @DeleteMapping("/{id}")
