@@ -107,7 +107,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
         Optional<SolicitudSeguimiento> solicitudSeguimiento = requestRepos.findById(idRequest);
         if(solicitudSeguimiento.isPresent()){
             if(solicitudSeguimiento.get().getUsuario().getId().equals(currentUser.getId())){
-                currentUser.getFollows().add(solicitudSeguimiento.get().getUsuario());
+                repository.getById(solicitudSeguimiento.get().getIdSeguidor()).getFollows().add(currentUser);
                 requestRepos.deleteById(idRequest);
                 repository.save(currentUser);
             }else{

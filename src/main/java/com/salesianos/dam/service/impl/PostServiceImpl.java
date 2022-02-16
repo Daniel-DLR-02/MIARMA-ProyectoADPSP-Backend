@@ -1,7 +1,8 @@
 package com.salesianos.dam.service.impl;
 
+import com.salesianos.dam.exception.PostNotFoundException;
+import com.salesianos.dam.exception.UnauthorizedRequestException;
 import com.salesianos.dam.model.Post;
-import com.salesianos.dam.model.UserRole;
 import com.salesianos.dam.model.Usuario;
 import com.salesianos.dam.model.dto.Post.CreatePostDto;
 import com.salesianos.dam.model.dto.Post.GetPostDto;
@@ -11,15 +12,12 @@ import com.salesianos.dam.repository.UsuarioRepository;
 import com.salesianos.dam.service.PostService;
 import com.salesianos.dam.service.StorageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -141,23 +139,20 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post getPostById(Long id, Usuario user) {
 
-        Optional<Post> post = repository.findById(id);
-
-        if(post.isEmpty()) {
-            return null;
-        }else {
-            if (post.get().isPublica()) {
-                return post.get();
-            } else {
-                for (Usuario usuarioDeLaLista : usuarioRepository.findFollowers(post.get().getUsuario().getId())) {
-                    if (usuarioDeLaLista.getId().equals(user.getId())) {
-                        return post.get();
-                    }else {
-                        return null;
-                    }
-                }
-                return null;
+        Optional<Post> postBuscado = repository.findById(id);
+        if(postBuscado.isPresent()){
+            Post postEncontrado = postBuscado.get();
+            List<UUID> idSeguidoresPropietarioPublicacion = usuarioRepository.findFollowers(postEncontrado.getUsuario().getId()).stream().map(Usuario::getId).toList();
+            if(postEncontrado.getUsuario().getId().equals(user.getId()) ||
+                    postEncontrado.isPublica() || idSeguidoresPropietarioPublicacion.contains(user.getId())){
+                return postBuscado.get();
             }
+            else{
+                throw new UnauthorizedRequestException("No se puede acceder al post al ser privado.");
+            }
+        }
+        else{
+            throw new PostNotFoundException("Post no encontrado");
         }
     }
 

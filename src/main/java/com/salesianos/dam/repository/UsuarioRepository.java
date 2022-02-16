@@ -17,7 +17,7 @@ public interface UsuarioRepository  extends JpaRepository<Usuario, UUID> {
 
     @Query(value = """
             SELECT * FROM usuario u
-            WHERE u.id = (SELECT user_id FROM follows
+            WHERE u.id IN (SELECT user_id FROM follows
                           WHERE following_id = :followed_id)
             """,nativeQuery = true)
     List<Usuario> findFollowers(@Param("followed_id") UUID id);

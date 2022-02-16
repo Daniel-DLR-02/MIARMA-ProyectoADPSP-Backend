@@ -43,7 +43,7 @@ public class PostController {
 
 
     }
-
+    
 
     @GetMapping("/public")
     public ResponseEntity<List<GetPostDto>> getAllPublic(){
