@@ -17,6 +17,5 @@ public class GetUsuarioDto {
     private String nick;
     private String email;
     private String avatar;
-    private String resizedAvatar;
     private boolean perfilPublico;
 }

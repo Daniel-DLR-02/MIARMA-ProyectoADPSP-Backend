@@ -54,18 +54,16 @@ public class Usuario implements UserDetails {
 
     private String avatar;
 
-    private String avatarResized;
-
     private String password;
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    /*@ManyToMany
-    @JoinTable(
-            name="usuario_follows",
-            joinColumns= @JoinColumn(name="usuario_id"),
-            inverseJoinColumns=@JoinColumn(name="followed_id")
+    /*
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "relation",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "following_id"))
     )*/
     @OneToMany
     @JoinColumn(referencedColumnName = "id")

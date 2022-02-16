@@ -86,6 +86,7 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public String storeResized(MultipartFile file,int width) throws Exception {
+
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
 
         String extension = StringUtils.getFilenameExtension(filename);
@@ -99,6 +100,7 @@ public class FileSystemStorageService implements StorageService {
         ImageIO.write( escaleImg, extension, baos );
 
         MultipartFile newImage = new MockMultipartFile(name,baos.toByteArray());
+
 
         try {
 

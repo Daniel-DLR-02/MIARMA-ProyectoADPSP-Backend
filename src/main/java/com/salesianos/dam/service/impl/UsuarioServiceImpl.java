@@ -15,7 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,16 +36,10 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     @Override
     public Usuario save(CreateUsuarioDto createUsuarioDto, MultipartFile file) throws Exception {
 
-        String filenameOriginal = storageService.storeOriginal(file);
-
-        String uriOriginal = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/download/")
-                .path(filenameOriginal)
-                .toUriString();
-
         String filenameResized = storageService.storeResized(file,128);
 
-        String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
+
+        String uri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/download/")
                 .path(filenameResized)
                 .toUriString();
@@ -52,8 +51,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
                 .fechaNacimiento(createUsuarioDto.getFechaNacimiento())
                 .password(passwordEncoder.encode(createUsuarioDto.getPassword()))
                 .perfilPublico(createUsuarioDto.isPublico())
-                .avatar(uriOriginal)
-                .avatarResized(uriResized)
+                .avatar(uri)
                 .role(UserRole.USER)
                 .build());
 
