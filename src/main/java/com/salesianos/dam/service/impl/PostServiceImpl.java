@@ -19,9 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +34,14 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post save(CreatePostDto createPostDto, MultipartFile file,Usuario user) throws Exception {
 
+        List<String> videoExtension = Arrays.asList("webm","mkv","flv","vob","ogv","ogg",
+                "rrc","gifv","mng","mov","avi","qt","wmv","yuv","rm","asf","amv","mp4","m4p","m4v","mpg","mp2","mpeg","mpe",
+                "mpv","m4v","svi","3gp","3gpp","3g2","mxf","roq","nsv","flv","f4v","f4p","f4a","f4b","mod");
+
+        String extension = StringUtils.getFilenameExtension(StringUtils.cleanPath(file.getOriginalFilename()));
+
+        System.out.println(extension);
+
         String filenameOriginal = storageService.storeOriginal(file);
 
         String uriOriginal = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -43,21 +49,24 @@ public class PostServiceImpl implements PostService {
                 .path(filenameOriginal)
                 .toUriString();
 
-        String filenameResized = storageService.storeResized(file,1024);
-
-        String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/download/")
-                .path(filenameResized)
-                .toUriString();
 
         Post newPost = Post.builder()
                 .titulo(createPostDto.getTitulo())
                 .texto(createPostDto.getTexto())
                 .ficheroAdjunto(uriOriginal)
                 .usuario(user)
-                .ficheroAdjuntoResized(uriResized)
                 .publica(createPostDto.isPublica())
                 .build();
+
+        if(!videoExtension.contains(extension)) {
+            String filenameResized = storageService.storeResized(file, 1024);
+
+            String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/download/")
+                    .path(filenameResized)
+                    .toUriString();
+            newPost.setFicheroAdjuntoResized(uriResized);
+        }
 
         usuarioRepository.save(user);
         return repository.save(newPost);
