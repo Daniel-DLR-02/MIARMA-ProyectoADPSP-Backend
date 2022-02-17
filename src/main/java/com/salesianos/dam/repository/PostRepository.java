@@ -24,5 +24,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
            """,nativeQuery = true)
     List<Post>findCurrentUserPostsWithId(@Param("id") UUID id);
 
+    @Query(value = """
+            SELECT * FROM post p
+            WHERE p.usuario_id = :id
+            AND publica = true
+            """,nativeQuery = true)
+    List<Post> getPublicPostsOfUser(@Param("id") UUID id);
 
 }

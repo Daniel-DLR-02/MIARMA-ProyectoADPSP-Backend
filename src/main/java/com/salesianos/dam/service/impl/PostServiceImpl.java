@@ -2,6 +2,7 @@ package com.salesianos.dam.service.impl;
 
 import com.salesianos.dam.exception.PostNotFoundException;
 import com.salesianos.dam.exception.UnauthorizedRequestException;
+import com.salesianos.dam.exception.UserNotFoundException;
 import com.salesianos.dam.model.Post;
 import com.salesianos.dam.model.Usuario;
 import com.salesianos.dam.model.dto.Post.CreatePostDto;
@@ -148,7 +149,7 @@ public class PostServiceImpl implements PostService {
                 return postBuscado.get();
             }
             else{
-                throw new UnauthorizedRequestException("No se puede acceder al post al ser privado.");
+                throw new UnauthorizedRequestException("No se puede acceder a los posts de este usuario al ser privado.");
             }
         }
         else{
@@ -156,6 +157,20 @@ public class PostServiceImpl implements PostService {
         }
     }
 
+    @Override
+    public List<Post> getPostsOfUserWithNick(String nick, Usuario currentUser) {
+        Usuario userBuscado = usuarioRepository.findByNick(nick).orElseThrow(()->new UserNotFoundException("El usuario con el nick especificado no existe."));
+        List<UUID> idSeguidoresPropietarioCuenta = usuarioRepository.findFollowers(userBuscado.getId()).stream().map(Usuario::getId).toList();
+        if(userBuscado.getId().equals(currentUser.getId())){
+            return currentUser.getPosts();
+        }
+        else if(idSeguidoresPropietarioCuenta.contains(currentUser.getId()) || userBuscado.isPerfilPublico()){
+            return repository.getPublicPostsOfUser(userBuscado.getId());
+        }else{
+            throw new UnauthorizedRequestException("No se puede acceder al post al ser privada la cuenta.");
+        }
+
+    }
 
 
 }

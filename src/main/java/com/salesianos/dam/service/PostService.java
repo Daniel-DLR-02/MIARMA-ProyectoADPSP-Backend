@@ -31,4 +31,6 @@ public interface PostService {
     List<GetPostDto> getUserPosts(UUID id);
 
     Post getPostById(Long id, Usuario user);
+
+    List<Post> getPostsOfUserWithNick(String nick,Usuario currentUser);
 }

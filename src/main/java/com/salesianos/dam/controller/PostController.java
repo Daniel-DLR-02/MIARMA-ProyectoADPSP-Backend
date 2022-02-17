@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,6 +43,12 @@ public class PostController {
 
 
 
+    }
+
+    @PostMapping("/{nick}")
+    public ResponseEntity<List<GetPostDto>> getPostsOfUserWithNick(@PathVariable String nick,
+                                                                   @AuthenticationPrincipal Usuario currentUser){
+        return ResponseEntity.status(HttpStatus.OK).body(postService.getPostsOfUserWithNick(nick,currentUser).stream().map(postDtoConverter::postToGetPostDto).collect(Collectors.toList()));
     }
     
 
