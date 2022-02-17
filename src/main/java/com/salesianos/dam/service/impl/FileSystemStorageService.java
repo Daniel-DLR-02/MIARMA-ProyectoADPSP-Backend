@@ -4,6 +4,10 @@ import com.salesianos.dam.config.StorageProperties;
 import com.salesianos.dam.errors.exception.StorageException;
 import com.salesianos.dam.service.StorageService;
 import com.salesianos.dam.utils.MediaTypeUrlResource;
+import io.github.techgnious.IVCompressor;
+import io.github.techgnious.dto.IVSize;
+import io.github.techgnious.dto.ImageFormats;
+import io.github.techgnious.dto.VideoFormats;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -13,7 +17,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import com.salesianos.dam.errors.exception.FileNotFoundException;
 import javax.annotation.PostConstruct;
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.MalformedURLException;
@@ -25,6 +28,7 @@ import java.util.stream.Stream;
 
 @Service
 public class FileSystemStorageService implements StorageService {
+
 
     private final Path rootLocation;
 
@@ -83,23 +87,23 @@ public class FileSystemStorageService implements StorageService {
 
     }
 
+
     @Override
-    public String storeResized(MultipartFile file,int width) throws Exception {
+    public String storeImageResized(MultipartFile file,int width) throws Exception {
 
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
 
         String extension = StringUtils.getFilenameExtension(filename);
         String name = filename.replace("."+extension,"");
 
-        BufferedImage img = ImageIO.read(file.getInputStream());
+        IVCompressor compressor = new IVCompressor();
+        IVSize customRes=new IVSize();
+        customRes.setWidth(width);
+        customRes.setHeight(width);
 
-        BufferedImage escaleImg = simpleResizeImage(img , width);
+        byte[] inputS =  compressor.resizeImageWithCustomRes(file.getBytes(), ImageFormats.JPEG,customRes);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write( escaleImg, extension, baos );
-
-        InputStream inputS = new ByteArrayInputStream(baos.toByteArray());
-
+        ByteArrayInputStream bis = new ByteArrayInputStream(inputS);
 
 
         try {
@@ -117,7 +121,7 @@ public class FileSystemStorageService implements StorageService {
                 filename = name + "_" + suffix + "." + extension;
             }
 
-            try (InputStream inputStream = inputS) {
+            try (InputStream inputStream = bis) {
                 Files.copy(inputStream, rootLocation.resolve(filename),
                         StandardCopyOption.REPLACE_EXISTING);
             }
@@ -133,6 +137,52 @@ public class FileSystemStorageService implements StorageService {
 
     }
 
+    @Override
+    public String storeVideoResized(MultipartFile file, int width) throws IOException, Exception {
+        String filename = StringUtils.cleanPath(file.getOriginalFilename());
+
+        String extension = StringUtils.getFilenameExtension(filename);
+        String name = filename.replace("."+extension,"");
+
+        IVCompressor compressor = new IVCompressor();
+        IVSize customRes = new IVSize();
+        customRes.setWidth(width);
+        customRes.setHeight(width);
+
+        byte[] inputS = compressor.reduceVideoSizeWithCustomRes(file.getBytes(), VideoFormats.MP4, customRes);
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(inputS);
+
+
+        try {
+
+            if (file.isEmpty())
+                throw new StorageException("El fichero subido está vacío");
+
+
+            while(Files.exists(rootLocation.resolve(filename))) {
+
+
+                String suffix = Long.toString(System.currentTimeMillis());
+                suffix = suffix.substring(suffix.length()-6);
+
+                filename = name + "_" + suffix + "." + extension;
+            }
+
+            try (InputStream inputStream = bis) {
+                Files.copy(inputStream, rootLocation.resolve(filename),
+                        StandardCopyOption.REPLACE_EXISTING);
+            }
+
+
+
+        } catch (IOException ex) {
+            throw new StorageException("Error en el almacenamiento del fichero: " + filename, ex);
+        }
+
+
+        return filename;
+    }
 
 
     @Override

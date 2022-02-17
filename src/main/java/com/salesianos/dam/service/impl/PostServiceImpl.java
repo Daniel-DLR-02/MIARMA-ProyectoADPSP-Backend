@@ -57,7 +57,18 @@ public class PostServiceImpl implements PostService {
                 .build();
 
         if(!videoExtension.contains(extension)) {
-            String filenameResized = storageService.storeResized(file, 1024);
+            String filenameResized = storageService.storeImageResized(file, 1024);
+
+            String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/download/")
+                    .path(filenameResized)
+                    .toUriString();
+
+            newPost.setFicheroAdjuntoResized(uriResized);
+        }
+        else{
+
+            String filenameResized = storageService.storeVideoResized(file, 1024);
 
             String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/download/")
@@ -120,7 +131,7 @@ public class PostServiceImpl implements PostService {
                     .path(filenameOriginal)
                     .toUriString();
 
-            String filenameResized = storageService.storeResized(file,1024);
+            String filenameResized = storageService.storeImageResized(file,1024);
 
             String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/download/")

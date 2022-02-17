@@ -44,7 +44,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     @Override
     public Usuario save(CreateUsuarioDto createUsuarioDto, MultipartFile file) throws Exception {
 
-        String filenameResized = storageService.storeResized(file,128);
+        String filenameResized = storageService.storeImageResized(file,128);
 
 
         String uri = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -74,7 +74,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
             Path rutaFichero = storageService.load(StringUtils.cleanPath(String.valueOf(usuarioAEditar.getAvatar())).replace("http://localhost:8080/download/",""));
             storageService.deleteFile(rutaFichero);
 
-            String filenameResized = storageService.storeResized(file,128);
+            String filenameResized = storageService.storeImageResized(file,128);
 
             String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/download/")
