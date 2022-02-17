@@ -97,6 +97,14 @@ public class PostServiceImpl implements PostService {
     public Post edit(Post postAEditar,CreatePostDto postEdited,MultipartFile file) throws Exception {
 
         if(!file.isEmpty()){
+
+            Path rutaFicheroAdjunto = storageService.load(StringUtils.cleanPath(String.valueOf(postAEditar.getFicheroAdjunto())).replace("http://localhost:8080/download/",""));
+            storageService.deleteFile(rutaFicheroAdjunto);
+
+            Path rutaFicheroAdjuntoResized = storageService.load(StringUtils.cleanPath(String.valueOf(postAEditar.getFicheroAdjuntoResized())).replace("http://localhost:8080/download/",""));
+            storageService.deleteFile(rutaFicheroAdjuntoResized);
+
+
             String filenameOriginal = storageService.storeOriginal(file);
 
             String uriOriginal = ServletUriComponentsBuilder.fromCurrentContextPath()

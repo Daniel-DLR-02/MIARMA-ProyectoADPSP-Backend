@@ -1,18 +1,18 @@
 package com.salesianos.dam.controller;
 
+import com.salesianos.dam.model.Post;
 import com.salesianos.dam.model.Usuario;
 import com.salesianos.dam.model.dto.Peticion.GetPeticionDto;
+import com.salesianos.dam.model.dto.Usuario.CreateUsuarioDto;
 import com.salesianos.dam.model.dto.Usuario.GetUsuarioDto;
+import com.salesianos.dam.model.dto.Usuario.UsuarioDtoConverter;
 import com.salesianos.dam.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
@@ -20,6 +20,16 @@ import java.util.List;
 public class ProfileController {
 
     private final UsuarioService userService;
+    private final UsuarioDtoConverter usuarioDtoConverter;
+
+    @PutMapping("/profile/me")
+    public ResponseEntity<GetUsuarioDto> edit(@RequestPart("file") MultipartFile file,
+                                           @RequestPart("post") CreateUsuarioDto editedUser,
+                                           @AuthenticationPrincipal Usuario currentUser) throws Exception {
+
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioDtoConverter.usuarioToGetUsuarioDto(userService.edit(currentUser,editedUser,file)));
+
+    }
 
     @GetMapping("follow/list")
     public ResponseEntity<List<GetUsuarioDto>> getRequestList(@AuthenticationPrincipal Usuario currentUser){

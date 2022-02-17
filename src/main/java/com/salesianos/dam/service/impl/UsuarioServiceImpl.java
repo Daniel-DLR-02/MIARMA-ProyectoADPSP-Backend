@@ -3,10 +3,12 @@ package com.salesianos.dam.service.impl;
 import com.salesianos.dam.exception.RequestNotFoundException;
 import com.salesianos.dam.exception.UnauthorizedRequestException;
 import com.salesianos.dam.exception.UserNotFoundException;
+import com.salesianos.dam.model.Post;
 import com.salesianos.dam.model.SolicitudSeguimiento;
 import com.salesianos.dam.model.UserRole;
 import com.salesianos.dam.model.Usuario;
 import com.salesianos.dam.model.dto.Peticion.GetPeticionDto;
+import com.salesianos.dam.model.dto.Post.CreatePostDto;
 import com.salesianos.dam.model.dto.Usuario.CreateUsuarioDto;
 import com.salesianos.dam.model.dto.Usuario.GetUsuarioDto;
 import com.salesianos.dam.model.dto.Usuario.UsuarioDtoConverter;
@@ -20,10 +22,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -62,6 +66,37 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
                 .build());
 
 
+    }
+
+    @Override
+    public Usuario edit(Usuario usuarioAEditar, CreateUsuarioDto usuarioEditado, MultipartFile file) throws Exception {
+
+        if(!file.isEmpty()){
+
+            Path rutaFichero = storageService.load(StringUtils.cleanPath(String.valueOf(usuarioAEditar.getAvatar())).replace("http://localhost:8080/download/",""));
+            storageService.deleteFile(rutaFichero);
+
+            String filenameResized = storageService.storeResized(file,128);
+
+            String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/download/")
+                    .path(filenameResized)
+                    .toUriString();
+
+            usuarioAEditar.setAvatar(uriResized);
+
+        }
+
+        usuarioAEditar.setNombre(usuarioEditado.getNombre());
+        usuarioAEditar.setNick(usuarioEditado.getNick());
+        usuarioAEditar.setEmail(usuarioEditado.getEmail());
+        usuarioAEditar.setFechaNacimiento(usuarioAEditar.getFechaNacimiento());
+        usuarioAEditar.setFechaNacimiento(usuarioEditado.getFechaNacimiento());
+        usuarioAEditar.setPassword(usuarioEditado.getPassword());
+
+        repository.save(usuarioAEditar);
+
+        return usuarioAEditar;
     }
 
     @Override

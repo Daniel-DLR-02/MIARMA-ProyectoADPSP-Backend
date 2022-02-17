@@ -14,6 +14,8 @@ public interface UsuarioService {
 
     Usuario save(CreateUsuarioDto createUsuarioDto, MultipartFile file) throws Exception;
 
+    Usuario edit(Usuario usuarioAEditar, CreateUsuarioDto usuarioEditado, MultipartFile file) throws Exception;
+
     List<Usuario> findAll();
 
     Optional<Usuario> findById(UUID userId);
