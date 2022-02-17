@@ -169,13 +169,11 @@ public class PostServiceImpl implements PostService {
     public List<Post> getPostsOfUserWithNick(String nick, Usuario currentUser) {
         Usuario userBuscado = usuarioRepository.findByNick(nick).orElseThrow(()->new UserNotFoundException("El usuario con el nick especificado no existe."));
         List<UUID> idSeguidoresPropietarioCuenta = usuarioRepository.findFollowers(userBuscado.getId()).stream().map(Usuario::getId).toList();
-        if(userBuscado.getId().equals(currentUser.getId())){
+        if(userBuscado.getId().equals(currentUser.getId()) || idSeguidoresPropietarioCuenta.contains(currentUser.getId())){
             return currentUser.getPosts();
         }
-        else if(idSeguidoresPropietarioCuenta.contains(currentUser.getId()) || userBuscado.isPerfilPublico()){
+        else{
             return repository.getPublicPostsOfUser(userBuscado.getId());
-        }else{
-            throw new UnauthorizedRequestException("No se puede acceder al post al ser privada la cuenta.");
         }
 
     }
