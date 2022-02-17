@@ -14,6 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +22,13 @@ public class ProfileController {
 
     private final UsuarioService userService;
     private final UsuarioDtoConverter usuarioDtoConverter;
+
+    @GetMapping("/profile/{id}")
+    public ResponseEntity<GetUsuarioDto> getProfile(@PathVariable UUID id,
+                                              @AuthenticationPrincipal Usuario currentUser) throws Exception {
+
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUsuarioById(id,currentUser));
+    }
 
     @PutMapping("/profile/me")
     public ResponseEntity<GetUsuarioDto> edit(@RequestPart("file") MultipartFile file,

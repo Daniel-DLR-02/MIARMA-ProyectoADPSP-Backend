@@ -100,6 +100,24 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     }
 
     @Override
+    public GetUsuarioDto getUsuarioById(UUID id, Usuario currentUser) {
+
+        Optional<Usuario> usuarioAMostrar = repository.findById(id);
+
+        if(usuarioAMostrar.isPresent()){
+            if(currentUser.getFollows().contains(usuarioAMostrar.get()) || usuarioAMostrar.get().isPerfilPublico()){
+                return dtoConverter.usuarioToGetUsuarioDto(usuarioAMostrar.get());
+            }
+            else{
+                throw new UnauthorizedRequestException("El perfil es privado.");
+            }
+        }
+        else{
+            throw new UserNotFoundException("Usuario búscado no encontrado.");
+        }
+    }
+
+    @Override
     public List<Usuario> findAll() {
         return repository.findAll();
     }
@@ -114,27 +132,27 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 
         Optional<Usuario> usuarioReclamado = repository.findByNick(nick);
 
-            if(usuarioReclamado.isPresent()) {
-                if(!(usuarioReclamado.get().getId().equals(currentUser.getId())||currentUser.getFollows().contains(usuarioReclamado.get()))){
-                    SolicitudSeguimiento followRequest = SolicitudSeguimiento.builder()
-                            .idSeguidor(currentUser.getId())
-                            .usuario(usuarioReclamado.get())
-                            .build();
-                    requestRepos.save(followRequest);
-                    repository.save(currentUser);
-                    return GetPeticionDto.builder()
-                            .idSolicitud(followRequest.getId())
-                            .idSeguidor(currentUser.getId())
-                            .idSeguido(usuarioReclamado.get().getId())
-                            .build();
-                }
-                else{
-                    throw new UnauthorizedRequestException("Un usuario no puede seguirse así mismo ni a un usuario que ya sigue.");
-                }
+        if(usuarioReclamado.isPresent()) {
+            if(!(usuarioReclamado.get().getId().equals(currentUser.getId())||currentUser.getFollows().contains(usuarioReclamado.get()))){
+                SolicitudSeguimiento followRequest = SolicitudSeguimiento.builder()
+                        .idSeguidor(currentUser.getId())
+                        .usuario(usuarioReclamado.get())
+                        .build();
+                requestRepos.save(followRequest);
+                repository.save(currentUser);
+                return GetPeticionDto.builder()
+                        .idSolicitud(followRequest.getId())
+                        .idSeguidor(currentUser.getId())
+                        .idSeguido(usuarioReclamado.get().getId())
+                        .build();
             }
             else{
-                throw new UserNotFoundException("Usuario reclamado no encontrado.");
+                throw new UnauthorizedRequestException("Un usuario no puede seguirse así mismo ni a un usuario que ya sigue.");
             }
+        }
+        else{
+            throw new UserNotFoundException("Usuario reclamado no encontrado.");
+        }
     }
 
     @Override
