@@ -66,7 +66,7 @@ public class PostServiceImpl implements PostService {
 
             newPost.setFicheroAdjuntoResized(uriResized);
         }
-        else{
+        else if(extension.equals("mp4")){
 
             String filenameResized = storageService.storeVideoResized(file, 1024);
 

@@ -7,6 +7,7 @@ import com.salesianos.dam.utils.MediaTypeUrlResource;
 import io.github.techgnious.IVCompressor;
 import io.github.techgnious.dto.IVSize;
 import io.github.techgnious.dto.ImageFormats;
+import io.github.techgnious.dto.ResizeResolution;
 import io.github.techgnious.dto.VideoFormats;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,8 +149,9 @@ public class FileSystemStorageService implements StorageService {
         IVSize customRes = new IVSize();
         customRes.setWidth(width);
         customRes.setHeight(width);
+        ResizeResolution res = ResizeResolution.R240P;
 
-        byte[] inputS = compressor.reduceVideoSizeWithCustomRes(file.getBytes(), VideoFormats.MP4, customRes);
+        byte[] inputS = compressor.reduceVideoSizeWithCustomRes(file.getBytes(), VideoFormats.valueOf(extension.toUpperCase()), customRes);
 
         ByteArrayInputStream bis = new ByteArrayInputStream(inputS);
 
