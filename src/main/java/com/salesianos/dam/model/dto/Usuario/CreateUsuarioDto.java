@@ -1,6 +1,7 @@
 package com.salesianos.dam.model.dto.Usuario;
 
 import lombok.*;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
 
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
+@Validated
 public class CreateUsuarioDto {
 
     private String nombre;

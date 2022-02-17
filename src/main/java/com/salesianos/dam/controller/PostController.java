@@ -1,6 +1,6 @@
 package com.salesianos.dam.controller;
 
-import com.salesianos.dam.exception.PostNotFoundException;
+import com.salesianos.dam.errors.exception.PostNotFoundException;
 import com.salesianos.dam.model.Post;
 import com.salesianos.dam.model.Usuario;
 import com.salesianos.dam.model.dto.Post.CreatePostDto;
@@ -8,14 +8,13 @@ import com.salesianos.dam.model.dto.Post.GetPostDto;
 import com.salesianos.dam.model.dto.Post.PostDtoConverter;
 import com.salesianos.dam.service.PostService;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.implementation.bytecode.Throw;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +30,7 @@ public class PostController {
 
     @PostMapping("/")
     public ResponseEntity<GetPostDto> create(@RequestPart("file") MultipartFile file,
-                                             @RequestPart("post") CreatePostDto newPost,
+                                             @RequestPart("post") @Valid CreatePostDto newPost,
                                              @AuthenticationPrincipal Usuario currentUser) throws Exception {
 
         Post saved = postService.save(newPost,file,currentUser);

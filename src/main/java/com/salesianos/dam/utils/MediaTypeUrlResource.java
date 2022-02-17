@@ -1,7 +1,7 @@
 package com.salesianos.dam.utils;
 
 
-import com.salesianos.dam.exception.StorageException;
+import com.salesianos.dam.errors.exception.StorageException;
 import org.apache.tika.Tika;
 import org.springframework.core.io.UrlResource;
 

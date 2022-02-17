@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,7 +34,7 @@ public class ProfileController {
 
     @PutMapping("/profile/me")
     public ResponseEntity<GetUsuarioDto> edit(@RequestPart("file") MultipartFile file,
-                                           @RequestPart("post") CreateUsuarioDto editedUser,
+                                           @RequestPart("post") @Valid CreateUsuarioDto editedUser,
                                            @AuthenticationPrincipal Usuario currentUser) throws Exception {
 
         return ResponseEntity.status(HttpStatus.OK).body(usuarioDtoConverter.usuarioToGetUsuarioDto(userService.edit(currentUser,editedUser,file)));

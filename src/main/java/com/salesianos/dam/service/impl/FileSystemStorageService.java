@@ -1,18 +1,17 @@
 package com.salesianos.dam.service.impl;
 
 import com.salesianos.dam.config.StorageProperties;
-import com.salesianos.dam.exception.StorageException;
+import com.salesianos.dam.errors.exception.StorageException;
 import com.salesianos.dam.service.StorageService;
 import com.salesianos.dam.utils.MediaTypeUrlResource;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import com.salesianos.dam.exception.FileNotFoundException;
+import com.salesianos.dam.errors.exception.FileNotFoundException;
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

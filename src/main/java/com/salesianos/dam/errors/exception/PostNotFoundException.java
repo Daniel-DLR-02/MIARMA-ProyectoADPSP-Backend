@@ -1,4 +1,4 @@
-package com.salesianos.dam.exception;
+package com.salesianos.dam.errors.exception;
 
 
 public class PostNotFoundException extends RuntimeException {

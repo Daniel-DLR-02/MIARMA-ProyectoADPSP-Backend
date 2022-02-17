@@ -19,6 +19,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -45,7 +47,7 @@ public class AuthController {
 
     @PostMapping("/auth/register")
     public ResponseEntity<GetUsuarioDto> create(@RequestPart("file") MultipartFile file,
-                                                @RequestPart("user") CreateUsuarioDto newUsuario) throws Exception {
+                                                @RequestPart("user") @Valid CreateUsuarioDto newUsuario) throws Exception {
 
         Usuario saved = userService.save(newUsuario,file);
 

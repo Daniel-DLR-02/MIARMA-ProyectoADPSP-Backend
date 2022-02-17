@@ -1,8 +1,8 @@
 package com.salesianos.dam.service.impl;
 
-import com.salesianos.dam.exception.PostNotFoundException;
-import com.salesianos.dam.exception.UnauthorizedRequestException;
-import com.salesianos.dam.exception.UserNotFoundException;
+import com.salesianos.dam.errors.exception.PostNotFoundException;
+import com.salesianos.dam.errors.exception.UnauthorizedRequestException;
+import com.salesianos.dam.errors.exception.UserNotFoundException;
 import com.salesianos.dam.model.Post;
 import com.salesianos.dam.model.Usuario;
 import com.salesianos.dam.model.dto.Post.CreatePostDto;
