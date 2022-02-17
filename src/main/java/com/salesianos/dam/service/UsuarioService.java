@@ -30,5 +30,7 @@ public interface UsuarioService {
 
     List<GetUsuarioDto> peticionesDelUsuarioActual(Usuario currentUser);
 
+    boolean existsByNick(String nick);
 
+    boolean existsByEmail(String email);
 }

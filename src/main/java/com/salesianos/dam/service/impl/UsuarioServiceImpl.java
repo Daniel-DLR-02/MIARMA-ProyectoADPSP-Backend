@@ -192,6 +192,16 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     }
 
     @Override
+    public boolean existsByNick(String nick) {
+        return repository.existsByNick(nick);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return repository.existsByEmail(email);
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String nick) throws UsernameNotFoundException {
         return this.repository.findFirstByNick(nick)
                 .orElseThrow(()-> new UsernameNotFoundException(nick+ "no encontrado"));

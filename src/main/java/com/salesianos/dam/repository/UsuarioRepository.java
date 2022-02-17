@@ -31,6 +31,8 @@ public interface UsuarioRepository  extends JpaRepository<Usuario, UUID> {
     List<Usuario> getUsersWithRequestToUser(@Param("id_user_requested") UUID id);
 
 
+    boolean existsByNick(String nick);
 
+    boolean existsByEmail(String email);
 }
 
