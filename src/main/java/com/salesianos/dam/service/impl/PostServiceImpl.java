@@ -40,8 +40,6 @@ public class PostServiceImpl implements PostService {
 
         String extension = StringUtils.getFilenameExtension(StringUtils.cleanPath(file.getOriginalFilename()));
 
-        System.out.println(extension);
-
         String filenameOriginal = storageService.storeOriginal(file);
 
         String uriOriginal = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -65,6 +63,7 @@ public class PostServiceImpl implements PostService {
                     .path("/download/")
                     .path(filenameResized)
                     .toUriString();
+
             newPost.setFicheroAdjuntoResized(uriResized);
         }
 
