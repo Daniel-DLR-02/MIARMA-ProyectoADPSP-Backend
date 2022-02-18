@@ -81,7 +81,7 @@ public class PostController {
             if(current.getId().equals(postAEditar.getUsuario().getId()))
                 return ResponseEntity.status(HttpStatus.OK).body(postDtoConverter.postToGetPostDto(postService.edit(postAEditar,editedPost,file)));
             else
-                throw new UnauthorizedRequestException("Esta publicación no pertenece al usuario de las sesión actual.");
+                throw new UnauthorizedRequestException("Esta publicación no pertenece al usuario de la sesión actual.");
 
         }else {
             throw new PostNotFoundException ("Post no encontrado");
