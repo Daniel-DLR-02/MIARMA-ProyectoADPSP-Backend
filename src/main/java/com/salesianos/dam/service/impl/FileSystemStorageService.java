@@ -17,6 +17,8 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import com.salesianos.dam.errors.exception.FileNotFoundException;
+import ws.schild.jave.encode.EncodingAttributes;
+
 import javax.annotation.PostConstruct;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -57,6 +59,7 @@ public class FileSystemStorageService implements StorageService {
     public String storeOriginal(MultipartFile file) {
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
         String newFilename = "";
+
         try {
             if (file.isEmpty())
                 throw new StorageException("El fichero subido está vacío");
@@ -68,7 +71,6 @@ public class FileSystemStorageService implements StorageService {
 
                 String suffix = Long.toString(System.currentTimeMillis());
                 suffix = suffix.substring(suffix.length()-6);
-
                 newFilename = name + "_" + suffix + "." + extension;
 
             }
@@ -138,22 +140,34 @@ public class FileSystemStorageService implements StorageService {
 
     }
 
+
+
     @Override
     public String storeVideoResized(MultipartFile file, int width) throws IOException, Exception {
+
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
 
         String extension = StringUtils.getFilenameExtension(filename);
         String name = filename.replace("."+extension,"");
 
+
         IVCompressor compressor = new IVCompressor();
         IVSize customRes = new IVSize();
         customRes.setWidth(width);
         customRes.setHeight(width);
-        ResizeResolution res = ResizeResolution.R240P;
-
-        byte[] inputS = compressor.reduceVideoSizeWithCustomRes(file.getBytes(), VideoFormats.valueOf(extension.toUpperCase()), customRes);
+        byte[] inputS = compressor.reduceVideoSizeWithCustomRes(file.getBytes(), VideoFormats.MP4, customRes);
 
         ByteArrayInputStream bis = new ByteArrayInputStream(inputS);
+
+
+        while(Files.exists(rootLocation.resolve(filename))) {
+
+
+            String suffix = Long.toString(System.currentTimeMillis());
+            suffix = suffix.substring(suffix.length()-6);
+
+            filename = name + "_" + suffix + "." + extension;
+        }
 
 
         try {
@@ -161,15 +175,6 @@ public class FileSystemStorageService implements StorageService {
             if (file.isEmpty())
                 throw new StorageException("El fichero subido está vacío");
 
-
-            while(Files.exists(rootLocation.resolve(filename))) {
-
-
-                String suffix = Long.toString(System.currentTimeMillis());
-                suffix = suffix.substring(suffix.length()-6);
-
-                filename = name + "_" + suffix + "." + extension;
-            }
 
             try (InputStream inputStream = bis) {
                 Files.copy(inputStream, rootLocation.resolve(filename),

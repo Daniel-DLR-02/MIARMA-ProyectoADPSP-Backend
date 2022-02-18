@@ -1,6 +1,7 @@
 package com.salesianos.dam.service.impl;
 
 import com.salesianos.dam.errors.exception.PostNotFoundException;
+import com.salesianos.dam.errors.exception.StorageException;
 import com.salesianos.dam.errors.exception.UnauthorizedRequestException;
 import com.salesianos.dam.errors.exception.UserNotFoundException;
 import com.salesianos.dam.model.Post;
@@ -34,13 +35,10 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post save(CreatePostDto createPostDto, MultipartFile file,Usuario user) throws Exception {
 
-        List<String> videoExtension = Arrays.asList("webm","mkv","flv","vob","ogv","ogg",
-                "rrc","gifv","mng","mov","avi","qt","wmv","yuv","rm","asf","amv","mp4","m4p","m4v","mpg","mp2","mpeg","mpe",
-                "mpv","m4v","svi","3gp","3gpp","3g2","mxf","roq","nsv","flv","f4v","f4p","f4a","f4b","mod");
-
-        String extension = StringUtils.getFilenameExtension(StringUtils.cleanPath(file.getOriginalFilename()));
-
         String filenameOriginal = storageService.storeOriginal(file);
+
+        String extension = StringUtils.getFilenameExtension(filenameOriginal);
+
 
         String uriOriginal = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/download/")
@@ -56,7 +54,7 @@ public class PostServiceImpl implements PostService {
                 .publica(createPostDto.isPublica())
                 .build();
 
-        if(!videoExtension.contains(extension)) {
+        if(file.getContentType().matches("image/"+extension)) {
             String filenameResized = storageService.storeImageResized(file, 1024);
 
             String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -66,7 +64,7 @@ public class PostServiceImpl implements PostService {
 
             newPost.setFicheroAdjuntoResized(uriResized);
         }
-        else if(extension.equals("mp4")){
+        else if(file.getContentType().matches("video/mp4")){
 
             String filenameResized = storageService.storeVideoResized(file, 1024);
 
@@ -75,8 +73,9 @@ public class PostServiceImpl implements PostService {
                     .path(filenameResized)
                     .toUriString();
 
-            newPost.setFicheroAdjuntoResized(uriResized);
+            newPost.setFicheroAdjuntoResized(uriResized);//Excepción tipo no soportado
         }
+
 
         usuarioRepository.save(user);
         return repository.save(newPost);
