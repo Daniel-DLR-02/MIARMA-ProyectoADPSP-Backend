@@ -54,7 +54,7 @@ public class PostServiceImpl implements PostService {
                 .publica(createPostDto.isPublica())
                 .build();
 
-        if(file.getContentType().matches("image/"+extension)) {
+        if(file.getContentType().matches("image/\\D+")) {
             String filenameResized = storageService.storeImageResized(file, 1024);
 
             String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -64,7 +64,7 @@ public class PostServiceImpl implements PostService {
 
             newPost.setFicheroAdjuntoResized(uriResized);
         }
-        else if(file.getContentType().matches("video/mp4")){
+        else if(file.getContentType().equals("video/mp4")){
 
             String filenameResized = storageService.storeVideoResized(file, 1024);
 
@@ -73,7 +73,7 @@ public class PostServiceImpl implements PostService {
                     .path(filenameResized)
                     .toUriString();
 
-            newPost.setFicheroAdjuntoResized(uriResized);//Excepción tipo no soportado
+            newPost.setFicheroAdjuntoResized(uriResized);
         }
 
 
@@ -122,22 +122,37 @@ public class PostServiceImpl implements PostService {
             Path rutaFicheroAdjuntoResized = storageService.load(StringUtils.cleanPath(String.valueOf(postAEditar.getFicheroAdjuntoResized())).replace("http://localhost:8080/download/",""));
             storageService.deleteFile(rutaFicheroAdjuntoResized);
 
-
             String filenameOriginal = storageService.storeOriginal(file);
 
-            String uriOriginal = ServletUriComponentsBuilder.fromCurrentContextPath()
+            String uriArchivoOriginal = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/download/")
                     .path(filenameOriginal)
                     .toUriString();
+            postAEditar.setFicheroAdjunto(uriArchivoOriginal);
 
-            String filenameResized = storageService.storeImageResized(file,1024);
+            if(file.getContentType().matches("image/\\D+")) {
+                String filenameResized = storageService.storeImageResized(file, 1024);
 
-            String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/download/")
-                    .path(filenameResized)
-                    .toUriString();
-            postAEditar.setFicheroAdjunto(uriOriginal);
-            postAEditar.setFicheroAdjuntoResized(uriResized);
+                String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
+                        .path("/download/")
+                        .path(filenameResized)
+                        .toUriString();
+
+                postAEditar.setFicheroAdjuntoResized(uriResized);
+            }
+            else if(file.getContentType().equals("video/mp4")){
+
+                String filenameResized = storageService.storeVideoResized(file, 1024);
+
+                String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
+                        .path("/download/")
+                        .path(filenameResized)
+                        .toUriString();
+
+                postAEditar.setFicheroAdjuntoResized(uriResized);
+
+            }
+
 
         }
 

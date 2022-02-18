@@ -150,7 +150,6 @@ public class FileSystemStorageService implements StorageService {
         String extension = StringUtils.getFilenameExtension(filename);
         String name = filename.replace("."+extension,"");
 
-
         IVCompressor compressor = new IVCompressor();
         IVSize customRes = new IVSize();
         customRes.setWidth(width);
@@ -158,7 +157,6 @@ public class FileSystemStorageService implements StorageService {
         byte[] inputS = compressor.reduceVideoSizeWithCustomRes(file.getBytes(), VideoFormats.MP4, customRes);
 
         ByteArrayInputStream bis = new ByteArrayInputStream(inputS);
-
 
         while(Files.exists(rootLocation.resolve(filename))) {
 
@@ -168,7 +166,6 @@ public class FileSystemStorageService implements StorageService {
 
             filename = name + "_" + suffix + "." + extension;
         }
-
 
         try {
 
