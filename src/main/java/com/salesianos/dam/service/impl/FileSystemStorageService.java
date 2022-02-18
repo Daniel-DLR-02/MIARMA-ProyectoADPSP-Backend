@@ -17,6 +17,7 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import com.salesianos.dam.errors.exception.FileNotFoundException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ws.schild.jave.encode.EncodingAttributes;
 
 import javax.annotation.PostConstruct;
@@ -186,6 +187,14 @@ public class FileSystemStorageService implements StorageService {
 
 
         return filename;
+    }
+
+    @Override
+    public String createUri(String fileName){
+        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/download/")
+                .path(fileName)
+                .toUriString();
     }
 
 

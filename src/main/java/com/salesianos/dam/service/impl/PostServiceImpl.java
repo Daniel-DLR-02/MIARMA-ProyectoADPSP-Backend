@@ -38,12 +38,9 @@ public class PostServiceImpl implements PostService {
         String filenameOriginal = storageService.storeOriginal(file);
 
         String extension = StringUtils.getFilenameExtension(filenameOriginal);
-
-
-        String uriOriginal = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/download/")
-                .path(filenameOriginal)
-                .toUriString();
+        String filenameResized = "";
+        String uriResized = "";
+        String uriOriginal = storageService.createUri(filenameOriginal);
 
 
         Post newPost = Post.builder()
@@ -55,28 +52,20 @@ public class PostServiceImpl implements PostService {
                 .build();
 
         if(file.getContentType().matches("image/\\D+")) {
-            String filenameResized = storageService.storeImageResized(file, 1024);
+            filenameResized = storageService.storeImageResized(file, 1024);
 
-            String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/download/")
-                    .path(filenameResized)
-                    .toUriString();
+            uriResized = storageService.createUri(filenameResized);
 
-            newPost.setFicheroAdjuntoResized(uriResized);
         }
         else if(file.getContentType().equals("video/mp4")){
 
-            String filenameResized = storageService.storeVideoResized(file, 1024);
+            filenameResized = storageService.storeVideoResized(file, 1024);
 
-            String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/download/")
-                    .path(filenameResized)
-                    .toUriString();
+            uriResized = storageService.createUri(filenameResized);
 
-            newPost.setFicheroAdjuntoResized(uriResized);
         }
 
-
+        newPost.setFicheroAdjuntoResized(uriResized);
         usuarioRepository.save(user);
         return repository.save(newPost);
 
@@ -121,37 +110,28 @@ public class PostServiceImpl implements PostService {
 
             Path rutaFicheroAdjuntoResized = storageService.load(StringUtils.cleanPath(String.valueOf(postAEditar.getFicheroAdjuntoResized())).replace("http://localhost:8080/download/",""));
             storageService.deleteFile(rutaFicheroAdjuntoResized);
-
+            String filenameResized="";
+            String uriResized="";
             String filenameOriginal = storageService.storeOriginal(file);
 
-            String uriArchivoOriginal = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/download/")
-                    .path(filenameOriginal)
-                    .toUriString();
+            String uriArchivoOriginal = storageService.createUri(filenameOriginal);
+
             postAEditar.setFicheroAdjunto(uriArchivoOriginal);
 
             if(file.getContentType().matches("image/\\D+")) {
-                String filenameResized = storageService.storeImageResized(file, 1024);
+                filenameResized = storageService.storeImageResized(file, 1024);
 
-                String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
-                        .path("/download/")
-                        .path(filenameResized)
-                        .toUriString();
+                uriResized = storageService.createUri(filenameResized);
 
-                postAEditar.setFicheroAdjuntoResized(uriResized);
             }
             else if(file.getContentType().equals("video/mp4")){
 
-                String filenameResized = storageService.storeVideoResized(file, 1024);
+                filenameResized = storageService.storeVideoResized(file, 1024);
 
-                String uriResized = ServletUriComponentsBuilder.fromCurrentContextPath()
-                        .path("/download/")
-                        .path(filenameResized)
-                        .toUriString();
-
-                postAEditar.setFicheroAdjuntoResized(uriResized);
+                uriResized = storageService.createUri(filenameResized);
 
             }
+            postAEditar.setFicheroAdjuntoResized(uriResized);
 
 
         }
@@ -164,6 +144,7 @@ public class PostServiceImpl implements PostService {
 
         return postAEditar;
     }
+
 
     @Override
     public List<GetPostDto> getAllPublic() {

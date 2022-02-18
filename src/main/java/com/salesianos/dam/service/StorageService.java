@@ -18,6 +18,8 @@ public interface StorageService {
 
     String storeVideoResized(MultipartFile file,int width) throws IOException, Exception;
 
+    String createUri(String fileName);
+
     Stream<Path> loadAll();
 
     Path load(String filename);

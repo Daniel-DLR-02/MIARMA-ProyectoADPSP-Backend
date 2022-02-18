@@ -47,10 +47,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
         String filenameResized = storageService.storeImageResized(file,128);
 
 
-        String uri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/download/")
-                .path(filenameResized)
-                .toUriString();
+        String uri = storageService.createUri(filenameResized);
 
         return repository.save(Usuario.builder()
                 .nombre(createUsuarioDto.getNombre())
