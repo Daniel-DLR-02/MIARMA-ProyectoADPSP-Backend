@@ -1,6 +1,7 @@
 package com.salesianos.dam.controller;
 
 import com.salesianos.dam.errors.exception.PostNotFoundException;
+import com.salesianos.dam.errors.exception.UnauthorizedRequestException;
 import com.salesianos.dam.model.Post;
 import com.salesianos.dam.model.Usuario;
 import com.salesianos.dam.model.dto.Post.CreatePostDto;
@@ -69,16 +70,18 @@ public class PostController {
     @PutMapping("/{id}")
     public ResponseEntity<GetPostDto> edit(@RequestPart("file") MultipartFile file,
                                              @RequestPart("post") CreatePostDto editedPost,
-                                             @PathVariable Long id) throws Exception {
+                                             @PathVariable Long id,
+                                              @AuthenticationPrincipal Usuario current) throws Exception {
 
         Optional<Post> postBuscado = postService.findById(id);
 
 
         if(postBuscado.isPresent()){
-
             Post postAEditar = postBuscado.get();
-
-            return ResponseEntity.status(HttpStatus.OK).body(postDtoConverter.postToGetPostDto(postService.edit(postAEditar,editedPost,file)));
+            if(current.getId().equals(postAEditar.getUsuario().getId()))
+                return ResponseEntity.status(HttpStatus.OK).body(postDtoConverter.postToGetPostDto(postService.edit(postAEditar,editedPost,file)));
+            else
+                throw new UnauthorizedRequestException("Esta publicación no pertenece al usuario de las sesión actual.");
 
         }else {
             throw new PostNotFoundException ("Post no encontrado");
