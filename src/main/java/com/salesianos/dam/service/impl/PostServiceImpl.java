@@ -14,6 +14,8 @@ import com.salesianos.dam.repository.UsuarioRepository;
 import com.salesianos.dam.service.PostService;
 import com.salesianos.dam.service.StorageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -147,9 +149,9 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public List<GetPostDto> getAllPublic() {
+    public Page<GetPostDto> getAllPublic(Pageable pageable) {
 
-        return repository.findPostPublic().stream().map(dtoConverter::postToGetPostDto).collect(Collectors.toList());
+        return repository.findPostPublic(pageable).map(dtoConverter::postToGetPostDto);
     }
 
     @Override
