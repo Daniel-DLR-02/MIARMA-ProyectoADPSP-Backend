@@ -24,7 +24,7 @@ public interface PostService {
 
     Post getById(Long postId);
 
-    Post edit(Post postAEditar,CreatePostDto postEdited,MultipartFile file) throws Exception;
+    Post edit(/*Usuario currentUser,*/Post postAEditar,CreatePostDto postEdited,MultipartFile file) throws Exception;
 
     List<GetPostDto> getAllPublic();
 

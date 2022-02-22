@@ -102,47 +102,47 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post edit(Post postAEditar,CreatePostDto postEdited,MultipartFile file) throws Exception {
+            if (!file.isEmpty()) {
 
-        if(!file.isEmpty()){
+                Path rutaFicheroAdjunto = storageService.load(StringUtils.cleanPath(String.valueOf(postAEditar.getFicheroAdjunto())).replace("http://localhost:8080/download/", ""));
+                storageService.deleteFile(rutaFicheroAdjunto);
 
-            Path rutaFicheroAdjunto = storageService.load(StringUtils.cleanPath(String.valueOf(postAEditar.getFicheroAdjunto())).replace("http://localhost:8080/download/",""));
-            storageService.deleteFile(rutaFicheroAdjunto);
+                Path rutaFicheroAdjuntoResized = storageService.load(StringUtils.cleanPath(String.valueOf(postAEditar.getFicheroAdjuntoResized())).replace("http://localhost:8080/download/", ""));
+                storageService.deleteFile(rutaFicheroAdjuntoResized);
+                String filenameResized = "";
+                String uriResized = "";
+                String filenameOriginal = storageService.storeOriginal(file);
 
-            Path rutaFicheroAdjuntoResized = storageService.load(StringUtils.cleanPath(String.valueOf(postAEditar.getFicheroAdjuntoResized())).replace("http://localhost:8080/download/",""));
-            storageService.deleteFile(rutaFicheroAdjuntoResized);
-            String filenameResized="";
-            String uriResized="";
-            String filenameOriginal = storageService.storeOriginal(file);
+                String uriArchivoOriginal = storageService.createUri(filenameOriginal);
 
-            String uriArchivoOriginal = storageService.createUri(filenameOriginal);
+                postAEditar.setFicheroAdjunto(uriArchivoOriginal);
 
-            postAEditar.setFicheroAdjunto(uriArchivoOriginal);
+                if (file.getContentType().matches("image/\\D+")) {
+                    filenameResized = storageService.storeImageResized(file, 1024);
 
-            if(file.getContentType().matches("image/\\D+")) {
-                filenameResized = storageService.storeImageResized(file, 1024);
+                    uriResized = storageService.createUri(filenameResized);
 
-                uriResized = storageService.createUri(filenameResized);
+                } else if (file.getContentType().equals("video/mp4")) {
+
+                    filenameResized = storageService.storeVideoResized(file, 1024);
+
+                    uriResized = storageService.createUri(filenameResized);
+
+                }
+                postAEditar.setFicheroAdjuntoResized(uriResized);
+
 
             }
-            else if(file.getContentType().equals("video/mp4")){
 
-                filenameResized = storageService.storeVideoResized(file, 1024);
+            postAEditar.setTexto(postEdited.getTexto());
+            postAEditar.setTitulo(postEdited.getTitulo());
+            postAEditar.setPublica(postEdited.isPublica());
 
-                uriResized = storageService.createUri(filenameResized);
+            repository.save(postAEditar);
 
-            }
-            postAEditar.setFicheroAdjuntoResized(uriResized);
+            return postAEditar;
 
 
-        }
-
-        postAEditar.setTexto(postEdited.getTexto());
-        postAEditar.setTitulo( postEdited.getTitulo());
-        postAEditar.setPublica( postEdited.isPublica());
-
-        repository.save(postAEditar);
-
-        return postAEditar;
     }
 
 
