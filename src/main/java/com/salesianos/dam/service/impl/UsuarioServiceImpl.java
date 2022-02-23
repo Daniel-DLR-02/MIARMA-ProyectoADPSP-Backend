@@ -15,6 +15,8 @@ import com.salesianos.dam.repository.UsuarioRepository;
 import com.salesianos.dam.service.StorageService;
 import com.salesianos.dam.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -183,9 +185,14 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     }
 
     @Override
-    public List<GetUsuarioDto> peticionesDelUsuarioActual(Usuario currentUser) {
-        List<Usuario> listaDeUsuariosConPeticion = repository.getUsersWithRequestToUser(currentUser.getId());
-        return listaDeUsuariosConPeticion.stream().map(dtoConverter::usuarioToGetUsuarioDto).collect(Collectors.toList());
+    public Page<GetUsuarioDto> peticionesDelUsuarioActual(Pageable pageable, Usuario currentUser) {
+        Page<GetUsuarioDto> pagina = repository.getUsersWithRequestToUser(pageable,currentUser.getId()).map(dtoConverter::usuarioToGetUsuarioDto);
+        if(pagina.getContent().isEmpty()){
+            throw new RequestNotFoundException("No hay peticiones.");
+        }
+        else{
+            return pagina;
+        }
     }
 
     @Override
