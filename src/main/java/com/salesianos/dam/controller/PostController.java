@@ -78,8 +78,9 @@ public class PostController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<List<GetPostDto>> getUserPosts(@AuthenticationPrincipal Usuario currentUser){
-        return  ResponseEntity.status(HttpStatus.OK).body(postService.getUserPosts(currentUser.getId()));
+    public ResponseEntity<?> getUserPosts(@PageableDefault(size = 10,page=0) Pageable pageable,
+                                                         @AuthenticationPrincipal Usuario currentUser){
+        return  ResponseEntity.ok(postService.getUserPosts(pageable,currentUser.getId()));
     }
 
     @GetMapping("/{id}")

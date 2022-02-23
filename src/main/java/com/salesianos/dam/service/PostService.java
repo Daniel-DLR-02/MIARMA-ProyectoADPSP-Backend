@@ -30,7 +30,7 @@ public interface PostService {
 
     Page<GetPostDto> getAllPublic(Pageable pageable);
 
-    List<GetPostDto> getUserPosts(UUID id);
+    Page<GetPostDto> getUserPosts(Pageable pageable,UUID id);
 
     Post getPostById(Long id, Usuario user);
 

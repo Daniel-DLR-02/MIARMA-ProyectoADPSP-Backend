@@ -23,7 +23,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             SELECT * FROM post p
             WHERE p.usuario_id = :id
            """,nativeQuery = true)
-    List<Post>findCurrentUserPostsWithId(@Param("id") UUID id);
+    Page<Post>findCurrentUserPostsWithId(Pageable pageable,@Param("id") UUID id);
 
     @Query(value = """
             SELECT * FROM post p

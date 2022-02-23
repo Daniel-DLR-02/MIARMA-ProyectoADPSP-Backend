@@ -156,9 +156,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<GetPostDto> getUserPosts(UUID id) {
+    public Page<GetPostDto> getUserPosts(Pageable pageable,UUID id) {
 
-        return repository.findCurrentUserPostsWithId(id).stream().map(dtoConverter::postToGetPostDto).collect(Collectors.toList());
+        return repository.findCurrentUserPostsWithId(pageable,id).map(dtoConverter::postToGetPostDto);
 
     }
 
