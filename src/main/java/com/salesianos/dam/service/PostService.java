@@ -34,5 +34,5 @@ public interface PostService {
 
     Post getPostById(Long id, Usuario user);
 
-    List<Post> getPostsOfUserWithNick(String nick,Usuario currentUser);
+    Page<Post>  getPostsOfUserWithNick(Pageable pageable,String nick,Usuario currentUser);
 }

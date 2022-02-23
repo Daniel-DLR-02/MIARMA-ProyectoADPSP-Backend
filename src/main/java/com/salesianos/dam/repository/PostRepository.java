@@ -30,6 +30,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             WHERE p.usuario_id = :id
             AND publica = true
             """,nativeQuery = true)
-    List<Post> getPublicPostsOfUser(@Param("id") UUID id);
+    Page<Post> getPublicPostsOfUser(Pageable pageable,@Param("id") UUID id);
 
 }

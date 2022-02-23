@@ -15,6 +15,7 @@ import com.salesianos.dam.service.PostService;
 import com.salesianos.dam.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -182,14 +183,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> getPostsOfUserWithNick(String nick, Usuario currentUser) {
+    public Page<Post> getPostsOfUserWithNick(Pageable pageable, String nick, Usuario currentUser) {
         Usuario userBuscado = usuarioRepository.findByNick(nick).orElseThrow(()->new UserNotFoundException("El usuario con el nick especificado no existe."));
         List<UUID> idSeguidoresPropietarioCuenta = usuarioRepository.findFollowers(userBuscado.getId()).stream().map(Usuario::getId).toList();
         if(userBuscado.getId().equals(currentUser.getId()) || idSeguidoresPropietarioCuenta.contains(currentUser.getId())){
-            return currentUser.getPosts();
+            return new PageImpl<>(userBuscado.getPosts());
         }
         else{
-            return repository.getPublicPostsOfUser(userBuscado.getId());
+            return repository.getPublicPostsOfUser(pageable,userBuscado.getId());
         }
 
     }

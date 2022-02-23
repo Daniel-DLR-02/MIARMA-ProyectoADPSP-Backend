@@ -53,9 +53,9 @@ public class PostController {
     }
 
     @PostMapping("/{nick}")
-    public ResponseEntity<List<GetPostDto>> getPostsOfUserWithNick(@PathVariable String nick,
+    public ResponseEntity<?> getPostsOfUserWithNick(@PageableDefault(size = 10,page=0) Pageable pageable,@PathVariable String nick,
                                                                    @AuthenticationPrincipal Usuario currentUser){
-        return ResponseEntity.status(HttpStatus.OK).body(postService.getPostsOfUserWithNick(nick,currentUser).stream().map(postDtoConverter::postToGetPostDto).collect(Collectors.toList()));
+        return ResponseEntity.ok(postService.getPostsOfUserWithNick(pageable,nick,currentUser).map(postDtoConverter::postToGetPostDto));
     }
     
 
