@@ -4,6 +4,7 @@ import com.salesianos.dam.model.Post;
 import com.salesianos.dam.model.Usuario;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -15,6 +16,11 @@ import java.util.Set;
 public class GetUsuarioDto {
 
     private String nick;
+    private String nombre;
+    private LocalDate fechaDeNacimiento;
+    private int numeroSeguidores;
+    private int numeroSeguidos;
+    private int numeroPublicaciones;
     private String email;
     private String avatar;
     private boolean perfilPublico;
