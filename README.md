@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+# Peticiones de registro de Usuario
+
+## Creación de Usuario 1
+___
+=======
 # MIARMA-ProyectoADPSP-Backend
 
 La aplicación inicia en el puerto 8080, por lo que la url base será http://localhost:8080.
@@ -12,6 +18,7 @@ La aplicación inicia en el puerto 8080, por lo que la url base será http://loc
 
 ## Creación de Usuario 1
 
+>>>>>>> 8a5c441613f0571165de79dedf0199d055981ede
 
 - Adjuntar imagen: Recomendado imagen guest.png.
 - Adjuntar json crear_perfil1.json a la hora de hacer la petición Postman con el content type asignado a "application/json".
@@ -20,14 +27,22 @@ La aplicación inicia en el puerto 8080, por lo que la url base será http://loc
 <br />
 
 ## Creación de Usuario 2
+<<<<<<< HEAD
+___
+=======
 
+>>>>>>> 8a5c441613f0571165de79dedf0199d055981ede
 - Adjuntar imagen: Recomendado imagen guest.png.
 - Adjuntar json crear_perfil2.json a la hora de hacer la petición Postman con el content type asignado a "application/json".
 - Ejecutar la petición POST llamada Crear Usuario 2.
 
 <br />
 
+<<<<<<< HEAD
+# Peticiones de inicio de sesión de Usuario
+=======
 # Peticiones de inicio de sesión de Usuario (/auth/login)
+>>>>>>> 8a5c441613f0571165de79dedf0199d055981ede
 
 ## Inicio de sesión Usuarios 1 y Usuario 2
 
@@ -36,7 +51,11 @@ La aplicación inicia en el puerto 8080, por lo que la url base será http://loc
 
 <br />
 
+<<<<<<< HEAD
+# Usuario actual
+=======
 # Usuario actual (/me)
+>>>>>>> 8a5c441613f0571165de79dedf0199d055981ede
 
 Requisitos para esta petición:
 
@@ -48,28 +67,55 @@ Esta devolverá los datos del usuario que tiene la sesión iniciada en el que se
 
 # Solicitud de seguimiento
 
+<<<<<<< HEAD
+## Crear la solicitud
+---
+Requisitos para esta petición:
+
+    - Tener una como sesión actual la del Usuario 2
+=======
 ## Crear la solicitud (/follow/{nick})
 
 Requisitos para esta petición:
 
     - Tener una como sesión actual la del Usuario 2
     - Especificar nick del usuario a seguir en la url.
+>>>>>>> 8a5c441613f0571165de79dedf0199d055981ede
 
 Al hacer esta petición se creara una solicitud de parte del usuario 2, al usuario 1.
 
 <br />
 
+<<<<<<< HEAD
+## Aceptar la solicitud
+---
+Requisitos para esta petición:
+
+    - Tener una como sesión actual la del Usuario 1
+=======
 ## Aceptar la solicitud (/follow/accept/{id})
 
 Requisitos para esta petición:
 
     - Tener una como sesión actual la del Usuario 1
     - Especificar id de la solicitud en la url.
+>>>>>>> 8a5c441613f0571165de79dedf0199d055981ede
 
 Esta solicitud aceptará la solicitud ya creada por el Usuario 2.
 
 <br />
 
+<<<<<<< HEAD
+## Rechazar la solicitud
+---
+Requisitos para esta petición:
+
+    - Tener una como sesión actual la del Usuario 1
+
+Esta solicitud rechazará la solicitud ya creada por el Usuario 2.
+
+<br />
+=======
 ## Rechazar la solicitud (/follow/decline/{id})
 
 Requisitos para esta petición:
@@ -207,3 +253,4 @@ Requisitos para esta petición:
     - Especificar el nick del usuario del cual queremos obtener los posts en la url.
 
 Esta petición traerá los posts públicos del usuario especificado en la url, en caso de que el usuario que hace la petición, siga a este usuario, se mostrarán también los posts públicos.
+>>>>>>> 8a5c441613f0571165de79dedf0199d055981ede
