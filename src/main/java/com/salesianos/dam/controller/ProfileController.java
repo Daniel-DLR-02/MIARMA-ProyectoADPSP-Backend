@@ -8,6 +8,8 @@ import com.salesianos.dam.model.dto.Usuario.GetUsuarioDto;
 import com.salesianos.dam.model.dto.Usuario.UsuarioDtoConverter;
 import com.salesianos.dam.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -42,8 +44,9 @@ public class ProfileController {
     }
 
     @GetMapping("follow/list")
-    public ResponseEntity<List<GetUsuarioDto>> getRequestList(@AuthenticationPrincipal Usuario currentUser){
-        return ResponseEntity.status(HttpStatus.OK).body(userService.peticionesDelUsuarioActual(currentUser));
+    public ResponseEntity<?> getRequestList(@PageableDefault(size = 10,page=0) Pageable pageable,
+                                            @AuthenticationPrincipal Usuario currentUser){
+        return ResponseEntity.ok(userService.peticionesDelUsuarioActual(pageable,currentUser));
     }
 
     @PostMapping("follow/{nick}")

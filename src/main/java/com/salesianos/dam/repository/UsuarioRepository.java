@@ -2,6 +2,8 @@ package com.salesianos.dam.repository;
 
 
 import com.salesianos.dam.model.Usuario;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,7 +30,7 @@ public interface UsuarioRepository  extends JpaRepository<Usuario, UUID> {
             WHERE u.id IN (SELECT id_seguidor FROM solicitud_seguimiento
                             WHERE usuario_id = :id_user_requested)
             """,nativeQuery = true)
-    List<Usuario> getUsersWithRequestToUser(@Param("id_user_requested") UUID id);
+    Page<Usuario> getUsersWithRequestToUser(Pageable pageable, @Param("id_user_requested") UUID id);
 
 
     boolean existsByNick(String nick);

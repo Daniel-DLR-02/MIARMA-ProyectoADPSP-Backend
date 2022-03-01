@@ -52,9 +52,6 @@ public class FileSystemStorageService implements StorageService {
     }
 
 
-    public static BufferedImage simpleResizeImage(BufferedImage originalImage, int targetWidth) {
-        return Scalr.resize(originalImage, targetWidth);
-    }
 
     @Override
     public String storeOriginal(MultipartFile file) {

@@ -14,6 +14,9 @@ import com.salesianos.dam.repository.UsuarioRepository;
 import com.salesianos.dam.service.PostService;
 import com.salesianos.dam.service.StorageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -147,15 +150,15 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public List<GetPostDto> getAllPublic() {
+    public Page<GetPostDto> getAllPublic(Pageable pageable) {
 
-        return repository.findPostPublic().stream().map(dtoConverter::postToGetPostDto).collect(Collectors.toList());
+        return repository.findPostPublic(pageable).map(dtoConverter::postToGetPostDto);
     }
 
     @Override
-    public List<GetPostDto> getUserPosts(UUID id) {
+    public Page<GetPostDto> getUserPosts(Pageable pageable,UUID id) {
 
-        return repository.findCurrentUserPostsWithId(id).stream().map(dtoConverter::postToGetPostDto).collect(Collectors.toList());
+        return repository.findCurrentUserPostsWithId(pageable,id).map(dtoConverter::postToGetPostDto);
 
     }
 
@@ -180,14 +183,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> getPostsOfUserWithNick(String nick, Usuario currentUser) {
+    public Page<Post> getPostsOfUserWithNick(Pageable pageable, String nick, Usuario currentUser) {
         Usuario userBuscado = usuarioRepository.findByNick(nick).orElseThrow(()->new UserNotFoundException("El usuario con el nick especificado no existe."));
         List<UUID> idSeguidoresPropietarioCuenta = usuarioRepository.findFollowers(userBuscado.getId()).stream().map(Usuario::getId).toList();
         if(userBuscado.getId().equals(currentUser.getId()) || idSeguidoresPropietarioCuenta.contains(currentUser.getId())){
-            return currentUser.getPosts();
+            return new PageImpl<>(userBuscado.getPosts());
         }
         else{
-            return repository.getPublicPostsOfUser(userBuscado.getId());
+            return repository.getPublicPostsOfUser(pageable,userBuscado.getId());
         }
 
     }

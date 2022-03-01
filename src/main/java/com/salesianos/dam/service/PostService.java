@@ -4,6 +4,8 @@ import com.salesianos.dam.model.Post;
 import com.salesianos.dam.model.Usuario;
 import com.salesianos.dam.model.dto.Post.CreatePostDto;
 import com.salesianos.dam.model.dto.Post.GetPostDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,11 +28,11 @@ public interface PostService {
 
     Post edit(/*Usuario currentUser,*/Post postAEditar,CreatePostDto postEdited,MultipartFile file) throws Exception;
 
-    List<GetPostDto> getAllPublic();
+    Page<GetPostDto> getAllPublic(Pageable pageable);
 
-    List<GetPostDto> getUserPosts(UUID id);
+    Page<GetPostDto> getUserPosts(Pageable pageable,UUID id);
 
     Post getPostById(Long id, Usuario user);
 
-    List<Post> getPostsOfUserWithNick(String nick,Usuario currentUser);
+    Page<Post>  getPostsOfUserWithNick(Pageable pageable,String nick,Usuario currentUser);
 }
