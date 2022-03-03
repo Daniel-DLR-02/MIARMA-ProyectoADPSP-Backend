@@ -54,7 +54,7 @@ public class AuthController {
         if(saved == null)
             return ResponseEntity.badRequest().build();
         else
-            return ResponseEntity.status(HttpStatus.OK).body(usuarioDtoConverter.usuarioToGetUsuarioDto(saved));
+            return ResponseEntity.status(HttpStatus.CREATED).body(usuarioDtoConverter.usuarioToGetUsuarioDto(saved));
 
 
 
